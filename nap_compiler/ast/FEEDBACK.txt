@@ -1,0 +1,17 @@
+The naming convention was:
+
+- Exp + something for expression related classes, this includes array
+  access and array enumeration, call to conversion functions, function
+  calls, application of a unary operation: all these classes should
+  be renamed. 
+
+- Stm + something for instructions, this includes loops, these classes
+  should be renamed.
+
+Array enumeration corresponds to the right hand side of something
+like:
+
+var array<int> table = { 1, 1+1, 3, 2*2 }
+
+This list of expressions cannot be implemeted as a Java enumeration.
+

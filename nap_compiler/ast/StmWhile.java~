@@ -1,0 +1,33 @@
+package ast;
+
+public class StmWhile extends Statement
+{
+    public Block body;
+    public Expression condition;
+    public boolean doWhile;
+
+    // Two static factories: one for while loops, one for do while loops
+    public static StmWhile While(Expression expr, Block block)
+    {
+	return new StmWhile(expr, block, false);
+    }
+
+    public static StmWhile DoWhile(Expression expr, Block block)
+    {
+	return new StmWhile(expr, block, true);
+    }
+
+
+    private StmWhile(){}
+    
+    private StmWhile(Expression expr, Block block, boolean doWhile )
+    {
+	this.body = block;
+	this.condition = expr;
+    }
+    
+    public <T> T accept(Visitor<T> visitor)
+    {
+	return visitor.visit(this);
+    }
+}
