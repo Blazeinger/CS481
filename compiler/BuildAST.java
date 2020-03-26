@@ -86,14 +86,14 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitIAssign(napParser.IAssignContext ctx) {
+    public Ast visitStmAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
         return new InsAssign(position(ctx), var, exp);
     }
 
     @Override
-    public Ast visitIIf(napParser.IIfContext ctx) {
+    public Ast visitStmIf(napParser.IIfContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
         Block else_branch = (Block) visit(ctx.block(1));
@@ -102,20 +102,20 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitIWhile(napParser.IWhileContext ctx) {
+    public Ast visitStmWhile(napParser.IWhileContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block body = (Block) visit(ctx.block());
         return new InsWhile(position(ctx), condition, body);
     }
 
     @Override
-    public Ast visitIPrint(napParser.IPrintContext ctx) {
+    public Ast visitStmPrint(napParser.IPrintContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new InsPrint(position(ctx), exp);
     }
 
     @Override
-    public Ast visitIInput(napParser.IInputContext ctx) {
+    public Ast visitStmInput(napParser.IInputContext ctx) {
         String var = ctx.Identifier().toString();
         return new InsInput(position(ctx), var);
     }
