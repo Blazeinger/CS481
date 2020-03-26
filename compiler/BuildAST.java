@@ -81,7 +81,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitIAssign(W2Parser.IAssignContext ctx) {
+    public Ast visitSTNAssign(W2Parser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
         return new InsAssign(position(ctx), var, exp);
