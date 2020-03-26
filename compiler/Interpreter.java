@@ -85,10 +85,10 @@ public class Interpreter implements Visitor<Value> {
 	System.out.print(ins.var + "? ");
 	try {
 	    input  = in.readLine();
-	} catch (IOException e) {  
+	} catch (IOException e) {
             System.out.println(e);
 	    System.exit(-1);
-        }         
+        }
 	switch (type){
 	case INTEGER:
 	    value = new Value.Int(Integer.parseInt(input));
@@ -114,7 +114,7 @@ public class Interpreter implements Visitor<Value> {
     public Value visit(Typ type) {
         return new Value.Type(type.type);
     }
-    
+
     @Override
     public Value visit(InsIf ins) {
         Value.Bool condition = (Value.Bool) ins.exp.accept(this);
@@ -126,7 +126,7 @@ public class Interpreter implements Visitor<Value> {
 
     @Override
     public Value visit(InsWhile ins) {
-	while (((Value.Bool)ins.exp.accept(this)).value) {
+	while ((ins.exp.accept(this)).value) {
 	    ins.body.accept(this);
 	}
 	return Value.none;

@@ -9,7 +9,7 @@ import java.util.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 
-public class BuildAST extends W2BaseVisitor<Ast> {
+public class BuildAST extends napBaseVisitor<Ast> {
 
 	private static Position position(ParserRuleContext ctx) {
 	   return new Position(ctx.start.getLine(),
@@ -83,19 +83,19 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new StmAssign(position(ctx), var, exp);
     }
 
     @Override
     public Ast visitStmExp(napParser.IInputContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new STMExp(position(ctx), exp);
     }
 
     @Override
     public Ast visitStmIf(napParser.IIfContext ctx) {
-        Exp condition = (Exp) visit(ctx.expr());
+        Expression condition = (Expression) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
         Block else_branch = (Block) visit(ctx.block(1));
         return new StmIf(position(ctx), condition,
@@ -105,26 +105,26 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmPrint(napParser.IPrintContext ctx) {
         Type type = (Type) visit(ctx.type());
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new StmPrint(position(ctx), type, exp);
     }
 
     @Override
     public Ast visitStmRead(napParser.IInputContext ctx) {
         Type type = (Type) visit(ctx.type());
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new StmRead(position(ctx), type, exp);
     }
 
     @Override
     public Ast visitStmReturn(napParser.IReturnContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new STMReturn(position(ctx), exp);
     }
 
       @Override
       public Ast visitSTMWhile(napParser.IWhileContext ctx) {
-          Exp condition = (Exp) visit(ctx.expr());
+          Expression condition = (Expression) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
      	Bool doWhile = (Bool) visit(ctx.bool());
           return new STMWhile(position(ctx), condition, body, doWhile);
@@ -132,14 +132,14 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitEArrAccess(napParser.EIdentifierContext ctx) {
-        Exp array = (Exp) visit(ctx.expr(0));
-        Exp index = (Exp) visit(ctx.expr(1));
+        Expression array = (Expression) visit(ctx.expr(0));
+        Expression index = (Expression) visit(ctx.expr(1));
         return new EArrAccess(position(ctx), array, index);
     }
 
     @Override
     public Ast visitEEnum(napParser.EIdentifierContext ctx) {
-        List<Exp> exps = new ArrayList<>();
+        List<Expression> exps = new ArrayList<>();
         for (ExprContext ec : ctx.expr())
             exps.add((Expr) visit(ec));
         return new Program(position(ctx), exps);
@@ -147,7 +147,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitEAssignop(napParser.EIdentifierContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         boolean prefix = (boolean) visit(ctx.bool());
         return new EAssignop(position(ctx), OpBinary.EQ, exp, prefix);
     }
@@ -155,22 +155,22 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     // Start BINOP //////////////////////////////////////////////////
     @Override
     public Ast visitEOpAnd(napParser.EAndContext ctx) {
-        Exp left = (Exp) visit(ctx.expr(0));
-        Exp right = (Exp) visit(ctx.expr(1));
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
 
     @Override
     public Ast visitEOpOr(napParser.EOrContext ctx) {
-        Exp left = (Exp) visit(ctx.expr(0));
-        Exp right = (Exp) visit(ctx.expr(1));
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
     }
 
     @Override
     public Ast visitEOpCmp(napParser.ECmpContext ctx) {
-        Exp left = (Exp) visit(ctx.expr(0));
-        Exp right = (Exp) visit(ctx.expr(1));
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
         OpBinary cmp = OpBinary.EQ;
         switch (ctx.op.getType()) {
             case napLexer.NEQ:
@@ -197,8 +197,8 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitEOpMuls(napParser.EMulsContext ctx) {
-        Exp left = (Exp) visit(ctx.expr(0));
-        Exp right = (Exp) visit(ctx.expr(1));
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
         OpBinary op = null;
         switch (ctx.op.getType()) {
             case napLexer.DIV:
@@ -215,8 +215,8 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitEOpAdds(napParser.EAddsContext ctx) {
-        Exp left = (Exp) visit(ctx.expr(0));
-        Exp right = (Exp) visit(ctx.expr(1));
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
         OpBinary op = null;
         switch (ctx.op.getType()) {
             case napLexer.SUB:
@@ -247,7 +247,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast ExpFuncCall(napParser.EIdentifierContext ctx) {
         String name = (String) visit(ctx.Identifier());
-        List<Exp> arguments = new ArrayList<>();
+        List<Expression> arguments = new ArrayList<>();
         for (ExprContext ec : ctx.expr())
             arguments.add((Expr) visit(ec));
         return new FuncCall(position(ctx), name, arguments);
@@ -261,13 +261,13 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitELength(napParser.EIntContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
-        return new ELength(position(ctx), exp);
+        Expression exp = (Expression) visit(ctx.expr());
+        return new ExpLength(position(ctx), exp);
     }
 
     @Override
     public Ast visitENew(napParser.EIdentifierContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         TypBasic type = (TypBasic) visit(ctx.typbasic());
         return new ENew(position(ctx),type,  exp);
     }
@@ -278,12 +278,12 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.NOT, exp);
     }
 
     public Ast visitEOpMin(napParser.EOpMinContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
+        Expression exp = (Expression) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
     }
 

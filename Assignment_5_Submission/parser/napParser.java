@@ -17,39 +17,39 @@ public class napParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		Bool=1, Int=2, PInt=3, Char=4, String=5, Escape=6, AssignOp=7, WS=8, TRUE=9, 
-		FALSE=10, FOR=11, WHILE=12, DO=13, IF=14, ELSE=15, ARROW=16, IN=17, AEQ=18, 
-		SEQ=19, MEQ=20, DEQ=21, QUOTE=22, SQUOTE=23, BACKSLASH=24, LBLOCK=25, 
-		RBLOCK=26, LBRACKET=27, RBRACKET=28, INCR=29, DECR=30, ADD=31, AND=32, 
-		OR=33, NOT=34, MUL=35, SUB=36, DIV=37, MOD=38, ASSIGN=39, EQ=40, NEQ=41, 
-		LT=42, GT=43, LE=44, GE=45, ARRAY=46, BOOL=47, BYTE=48, INT=49, FLOAT=50, 
-		CHAR=51, FUNC=52, LPAR=53, RPAR=54, COMMA=55, REF=56, VAR=57, INPUT=58, 
+		Bool=1, Int=2, PInt=3, Char=4, String=5, Escape=6, AssignOp=7, WS=8, TRUE=9,
+		FALSE=10, FOR=11, WHILE=12, DO=13, IF=14, ELSE=15, ARROW=16, IN=17, AEQ=18,
+		SEQ=19, MEQ=20, DEQ=21, QUOTE=22, SQUOTE=23, BACKSLASH=24, LBLOCK=25,
+		RBLOCK=26, LBRACKET=27, RBRACKET=28, INCR=29, DECR=30, ADD=31, AND=32,
+		OR=33, NOT=34, MUL=35, SUB=36, DIV=37, MOD=38, ASSIGN=39, EQ=40, NEQ=41,
+		LT=42, GT=43, LE=44, GE=45, ARRAY=46, BOOL=47, BYTE=48, INT=49, FLOAT=50,
+		CHAR=51, FUNC=52, LPAR=53, RPAR=54, COMMA=55, REF=56, VAR=57, INPUT=58,
 		PRINT=59, NEW=60, Identifier=61, Comments=62;
 	public static final int
-		RULE_program = 0, RULE_function_definition = 1, RULE_parameter = 2, RULE_parameters = 3, 
-		RULE_block = 4, RULE_type = 5, RULE_statement = 6, RULE_declaration = 7, 
+		RULE_program = 0, RULE_function_definition = 1, RULE_parameter = 2, RULE_parameters = 3,
+		RULE_block = 4, RULE_type = 5, RULE_statement = 6, RULE_declaration = 7,
 		RULE_instruction = 8, RULE_expr = 9, RULE_expressions = 10;
 	public static final String[] ruleNames = {
-		"program", "function_definition", "parameter", "parameters", "block", 
+		"program", "function_definition", "parameter", "parameters", "block",
 		"type", "statement", "declaration", "instruction", "expr", "expressions"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'", 
-		"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", "'*='", 
-		"'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", "'--'", 
-		"'+'", "'&&'", "'||'", "'!'", "'*'", "'-'", "'/'", "'mod'", "'='", "'=='", 
-		"'!='", "'<'", "'>'", "'<='", "'>='", "'array'", "'bool'", "'byte'", "'int'", 
-		"'float'", "'char'", "'func'", "'('", "')'", "','", "'ref'", "'var'", 
+		null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'",
+		"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", "'*='",
+		"'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", "'--'",
+		"'+'", "'&&'", "'||'", "'!'", "'*'", "'-'", "'/'", "'mod'", "'='", "'=='",
+		"'!='", "'<'", "'>'", "'<='", "'>='", "'array'", "'bool'", "'byte'", "'int'",
+		"'float'", "'char'", "'func'", "'('", "')'", "','", "'ref'", "'var'",
 		"'read'", "'print'", "'new'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS", 
-		"TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ", 
-		"SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK", 
-		"LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "NOT", "MUL", 
-		"SUB", "DIV", "MOD", "ASSIGN", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ARRAY", 
-		"BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA", 
+		null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS",
+		"TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ",
+		"SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK",
+		"LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "NOT", "MUL",
+		"SUB", "DIV", "MOD", "ASSIGN", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ARRAY",
+		"BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA",
 		"REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", "Comments"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
@@ -448,7 +448,7 @@ public class napParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_type; }
-	 
+
 		public TypeContext() { }
 		public void copyFrom(TypeContext ctx) {
 			super.copyFrom(ctx);
@@ -643,7 +643,7 @@ public class napParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
-	 
+
 		public StatementContext() { }
 		public void copyFrom(StatementContext ctx) {
 			super.copyFrom(ctx);
@@ -815,7 +815,7 @@ public class napParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_instruction; }
-	 
+
 		public InstructionContext() { }
 		public void copyFrom(InstructionContext ctx) {
 			super.copyFrom(ctx);
@@ -1234,7 +1234,7 @@ public class napParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_expr; }
-	 
+
 		public ExprContext() { }
 		public void copyFrom(ExprContext ctx) {
 			super.copyFrom(ctx);
@@ -1929,7 +1929,7 @@ public class napParser extends Parser {
 						}
 						break;
 					}
-					} 
+					}
 				}
 				setState(203);
 				_errHandler.sync(this);

@@ -7,7 +7,7 @@ abstract class Value
     public boolean isType(){ return false; }
     public boolean isBool(){ return false; }
     public boolean isInt(){ return false; }
-    
+
     public static class Type extends Value
     {
 	public TypBasic value;
@@ -25,7 +25,7 @@ abstract class Value
 	    else
 		return false;
 	}
-	@Override
+
 	public boolean isInt() { return true; }
 	public Int(int value){ this.value = value; }
     }

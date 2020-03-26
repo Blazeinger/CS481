@@ -29,9 +29,9 @@ public class Main {
         // abstract syntax tree
         napVisitor<Ast> buildAST = new BuildAST();
         Program program = (Program) buildAST.visit(tree);
-	if(1 < args.length && args[1].equals("-p"))
-	    System.out.println(program.accept(new PrettyPrinter(2)));
-	else if (1 < args.length && args[1].equals("-i"))
-	    program.accept(new Interpreter());
+	// if(1 < args.length && args[1].equals("-p"))
+	//     System.out.println(program.accept(new PrettyPrinter(2)));
+	// else if (1 < args.length && args[1].equals("-i"))
+	//     program.accept(new Interpreter());
     }
 }
