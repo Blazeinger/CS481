@@ -79,20 +79,17 @@ public class BuildAST extends napBaseVisitor<Ast> {
 	//     return new Declaration(position(ctx), name, type, val);
     // }
 
-    @Override
     public Ast visitStmAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Expression exp = (Expression) visit(ctx.expr());
         return new StmAssign(position(ctx), var, exp);
     }
 
-    @Override
-    public Ast visitStmExp(napParser.ExprContext ctx) {
+    public Ast visitStmExp(napParser.IExprContext ctx) {
         Expression exp = (Expression) visit(ctx.expr());
-        return new STMExp(position(ctx), exp);
+        return new StmExp(position(ctx), exp);
     }
 
-    @Override
     public Ast visitStmIf(napParser.IIfContext ctx) {
         Expression condition = (Expression) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
@@ -101,50 +98,43 @@ public class BuildAST extends napBaseVisitor<Ast> {
                 then_branch, else_branch);
     }
 
-    @Override
     public Ast visitStmPrint(napParser.IPrintContext ctx) {
-        Type type = (Type) visit(ctx.type());
+        TypBasic type = (TypBasic) visit(ctx.type());
         Expression exp = (Expression) visit(ctx.expr());
         return new StmPrint(position(ctx), type, exp);
     }
 
-    @Override
     public Ast visitStmRead(napParser.IInputContext ctx) {
         Type type = (Type) visit(ctx.type());
         Expression exp = (Expression) visit(ctx.expr());
         return new StmRead(position(ctx), type, exp);
     }
 
-    @Override
     public Ast visitStmReturn(napParser.IReturnContext ctx) {
         Expression exp = (Expression) visit(ctx.expr());
-        return new STMReturn(position(ctx), exp);
+        return new StmReturn(position(ctx), exp);
     }
 
-      @Override
-      public Ast visitSTMWhile(napParser.IWhileContext ctx) {
+      public Ast visitStmWhile(napParser.IWhileContext ctx) {
           Expression condition = (Expression) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
      	Bool doWhile = (Bool) visit(ctx.bool());
-          return new STMWhile(position(ctx), condition, body, doWhile);
+          return new StmWhile(position(ctx), condition, body, doWhile);
       }
 
-    @Override
     public Ast visitEArrAccess(napParser.EArrayAccessContext ctx) {
         Expression array = (Expression) visit(ctx.expr(0));
         Expression index = (Expression) visit(ctx.expr(1));
         return new EArrAccess(position(ctx), array, index);
     }
 
-    @Override
-    public Ast visitEEnum(napParser.EArrayEnumerationContext ctx) {
+    public Ast visitEArrayEnum(napParser.EArrayEnumerationContext ctx) {
         List<Expression> exps = new ArrayList<>();
         for (ExprContext ec : ctx.expr())
-            exps.add((Expr) visit(ec));
-        return new Program(position(ctx), exps);
+            exps.add((Expression) visit(ec));
+        return new ArrayEnum(position(ctx), exps);
     }
 
-    @Override
     public Ast visitEAssignop(napParser.IAssignContext ctx) {
         Expression exp = (Expression) visit(ctx.expr());
         boolean prefix = (boolean) visit(ctx.bool());
@@ -235,12 +225,11 @@ public class BuildAST extends napBaseVisitor<Ast> {
 			  Character.parseCharacter(ctx.CConstant().toString()));
     }
 
-    @Override
     public Ast ExpFuncCall(napParser.ECallContext ctx) {
-        String name = (String) visit(ctx.Identifier());
+        String name = visit(ctx.Identifier()).toString();
         List<Expression> arguments = new ArrayList<>();
         for (ExprContext ec : ctx.expr())
-            arguments.add((Expr) visit(ec));
+            arguments.add((Expression) visit(ec));
         return new FuncCall(position(ctx), name, arguments);
     }
 
@@ -270,15 +259,14 @@ public class BuildAST extends napBaseVisitor<Ast> {
 
     public Ast visitEOpNot(napParser.ENotContext ctx) {
         Expression exp = (Expression) visit(ctx.expr());
-        return new ExpUnop(position(ctx), OpUnary.NOT, exp);
+        return new ExpUnop(position(ctx), exp, OpUnary.NOT);
     }
 
     // public Ast visitEOpMin(napParser.EMinContext ctx) {
     //     Expression exp = (Expression) visit(ctx.expr());
-    //     return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
+    //     return new ExpUnop(position(ctx), exp, OpUnary.SUB);
     // }
 
-    @Override
     public Ast visitEVar(napParser.EIdentifierContext ctx) {
         return new ExpVar(position(ctx), ctx.Identifier().toString());
     }
