@@ -140,7 +140,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
       }
 
     @Override
-    public Ast visitEId(napParser.EIdentifierContext ctx) {
+    public Ast visitEVar(napParser.EIdentifierContext ctx) {
         return new ExpVar(position(ctx), ctx.Identifier().toString());
     }
 
