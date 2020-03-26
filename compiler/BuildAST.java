@@ -81,11 +81,6 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitExprArrAccess(napParser.StatementContext ctx) {
-
-    }
-
-    @Override
     public Ast visitSTMAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
