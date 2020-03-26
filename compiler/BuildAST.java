@@ -80,6 +80,18 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 	    return new Declaration(position(ctx), name, type, val);
     }
 
+    // visitSTMArrayAccess
+    // visitSTMEnum
+    // visitSTMCallConversion
+    // visitSTMChar
+    // visitSTMFuncCall
+    // visitSTMInt
+    // visitSTMLength
+    // visitSTMNew
+    // visitSTMString
+    // visitSTMUnop
+    // visitSTMVar
+
     @Override
     public Ast visitSTMAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
