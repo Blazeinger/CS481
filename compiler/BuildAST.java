@@ -82,7 +82,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
     @Override
     public Ast visitExprArrAccess(napParser.StatementContext ctx) {
-	    
+
     }
 
     @Override
@@ -105,19 +105,19 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     public Ast visitSTMWhile(napParser.IWhileContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block body = (Block) visit(ctx.block());
-        return new InsWhile(position(ctx), condition, body);
+        return new STMWhile(position(ctx), condition, body);
     }
 
     @Override
     public Ast visitSTMPrint(napParser.IPrintContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new InsPrint(position(ctx), exp);
+        return new STMPrint(position(ctx), exp);
     }
 
     @Override
     public Ast visitSTMInput(napParser.IInputContext ctx) {
         String var = ctx.Identifier().toString();
-        return new InsInput(position(ctx), var);
+        return new STMRead(position(ctx), var);
     }
 
     @Override
@@ -176,22 +176,22 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary cmp = OpBinary.EQ;
         switch (ctx.op.getType()) {
-            case W2Lexer.NEQ:
+            case napLexer.NEQ:
                 cmp = OpBinary.NEQ;
                 break;
-            case W2Lexer.EQ:
+            case napLexer.EQ:
                 cmp = OpBinary.EQ;
                 break;
-            case W2Lexer.LT:
+            case napLexer.LT:
                 cmp = OpBinary.LT;
                 break;
-            case W2Lexer.GT:
+            case napLexer.GT:
                 cmp = OpBinary.GT;
                 break;
-            case W2Lexer.LE:
+            case napLexer.LE:
                 cmp = OpBinary.LE;
                 break;
-            case W2Lexer.GE:
+            case napLexer.GE:
                 cmp = OpBinary.GE;
                 break;
         }
@@ -209,13 +209,13 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
         switch (ctx.op.getType()) {
-            case W2Lexer.DIV:
+            case napLexer.DIV:
                 op = OpBinary.DIV;
                 break;
-            case W2Lexer.MOD:
+            case napLexer.MOD:
                 op = OpBinary.MOD;
                 break;
-            case W2Lexer.MUL:
+            case napLexer.MUL:
                 op = OpBinary.MUL;
         }
         return new ExpBinop(position(ctx), left, op, right);
@@ -227,10 +227,10 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
         switch (ctx.op.getType()) {
-            case W2Lexer.SUB:
+            case napLexer.SUB:
                 op = OpBinary.SUB;
                 break;
-            case W2Lexer.ADD:
+            case napLexer.ADD:
                 op = OpBinary.ADD;
                 break;
         }
