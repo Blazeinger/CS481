@@ -135,8 +135,8 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         return new ExpVar(position(ctx), ctx.Identifier().toString());
     }
 
-    @Override // TODO: Find Context
-    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
+    @Override
+    public Ast visitEOpNeg(napParser.ENotContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.NOT, exp);
     }
