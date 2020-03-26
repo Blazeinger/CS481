@@ -126,7 +126,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
       public Ast visitSTMWhile(napParser.IWhileContext ctx) {
           Exp condition = (Exp) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
-     	Bool doWhile = (Bool) visit(ctx.boolean());
+     	Bool doWhile = (Bool) visit(ctx.bool());
           return new STMWhile(position(ctx), condition, body, doWhile);
       }
 
@@ -148,7 +148,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitEAssignop(napParser.EIdentifierContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        boolean prefix = (boolean) visit(ctx.boolean());
+        boolean prefix = (boolean) visit(ctx.bool());
         return new EAssignop(position(ctx), OpBinary.EQ, exp, prefix);
     }
 
