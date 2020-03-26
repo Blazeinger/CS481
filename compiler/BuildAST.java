@@ -73,6 +73,14 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
+    public Ast visitDeclaration(W2Parser.StatementContext ctx) {
+	    String name = (String) visit(ctx.Identifier());
+	    Optional<Expression> val = (Expression) ctx.expression;
+	    Type type = (Type) visit(ctx.Type());
+	    return new Declaration(position(ctx), name, type, val);
+    }
+
+    @Override
     public Ast visitIAssign(W2Parser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
