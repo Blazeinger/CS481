@@ -49,7 +49,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 
 	@Override
 	public Ast visitTBOOL(napParser.TBOOLContext ctx) {
-	   return new Typ(TypBasic.BOOLEAN;
+	   return new Typ(TypBasic.BOOLEAN);
 	}
 
 	@Override

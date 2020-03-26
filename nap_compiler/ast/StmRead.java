@@ -1,5 +1,5 @@
 package ast;
-import java.util.*;
+
 public class StmRead extends Statement {
     public Type type;
     public Expression exp;

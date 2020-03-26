@@ -189,20 +189,20 @@ public class PrettyPrinter implements ast.Visitor<String> {
     @Override
     public String visit(ExpCallConversion exp){
         String con = exp.con.toString( );
-        String exp = exp.exp.accept(this);
-    return con+"("+exp+")";
+        String expr = exp.exp.accept(this);
+    return con+"("+expr+")";
     }
 
     @Override
     public String visit(ExpFuncCall exp){
         String funcName = exp.funcName;
-        String arguments = “”;
+        String arguments = "";
         for(int i = 0; i < exp.arguments.size(); i++) {
-            if(!arguments.equals(“”)) arguments += “, “;
+            if(!arguments.equals("")) arguments += ", ";
             String expr =  exp.arguments.get(i).accept(this);
             arguments += expr;
         }
-    return funcName + “(” + arguments + “)”
+    return funcName + "(" + arguments + ")";
     }
 
     @Override

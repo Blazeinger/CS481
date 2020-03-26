@@ -1,7 +1,5 @@
 package ast;
 
-import java.util.*;
-
 public class ExpArrAccess extends Expression {
     public Expression array;
     public Expression index;

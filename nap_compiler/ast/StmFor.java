@@ -7,7 +7,7 @@ public class StmFor extends Statement{
     public Block body;
     
     public StmFor( Position pos, Type type,
-		   String identifier, Expression expr,
+		   String var, Expression expr,
 		   Block block )
     {
 	this.type = type;
