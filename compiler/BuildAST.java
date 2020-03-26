@@ -80,27 +80,15 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 	    return new Declaration(position(ctx), name, type, val);
     }
 
-    // visitSTMArrayAccess
-    // visitSTMEnum
-    // visitSTMCallConversion
-    // visitSTMChar
-    // visitSTMFuncCall
-    // visitSTMInt
-    // visitSTMLength
-    // visitSTMNew
-    // visitSTMString
-    // visitSTMUnop
-    // visitSTMVar
-
     @Override
-    public Ast visitSTMAssign(napParser.IAssignContext ctx) {
+    public Ast visitSTMAssign(napParser.STMAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
         return new InsAssign(position(ctx), var, exp);
     }
 
     @Override
-    public Ast visitSTMIf(napParser.IIfContext ctx) {
+    public Ast visitSTMIf(napParser.STMIfContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
         Block else_branch = (Block) visit(ctx.block(1));
@@ -109,20 +97,20 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitSTMWhile(napParser.IWhileContext ctx) {
+    public Ast visitSTMWhile(napParser.STMWhileContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block body = (Block) visit(ctx.block());
         return new STMWhile(position(ctx), condition, body);
     }
 
     @Override
-    public Ast visitSTMPrint(napParser.IPrintContext ctx) {
+    public Ast visitSTMPrint(napParser.STMPrintContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new STMPrint(position(ctx), exp);
     }
 
     @Override
-    public Ast visitSTMInput(napParser.IInputContext ctx) {
+    public Ast visitSTMInput(napParser.STMInputContext ctx) {
         String var = ctx.Identifier().toString();
         return new STMRead(position(ctx), var);
     }
