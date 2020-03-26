@@ -128,24 +128,24 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEId(napParser.EIdContext ctx) {
+    public Ast visitEId(napParser.EIdentifierContext ctx) {
         return new ExpVar(position(ctx), ctx.Identifier().toString());
     }
 
-    @Override
+    @Override // TODO: Find Context
     public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.NOT, exp);
     }
 
-    @Override
+    @Override // TODO: Find Context
     public Ast visitEOpMin(napParser.EOpMinContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
     }
 
     @Override
-    public Ast visitEOpOr(napParser.EOpOrContext ctx) {
+    public Ast visitEOpOr(napParser.EOrContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
@@ -164,21 +164,21 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEOpAnd(napParser.EOpAndContext ctx) {
+    public Ast visitEOpAnd(napParser.EAndContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
 
     @Override
-    public Ast visitEOpOr(napParser.EOpOrContext ctx) {
+    public Ast visitEOpOr(napParser.EOrContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
     }
 
     @Override
-    public Ast visitEOpCmp(napParser.EOpCmpContext ctx) {
+    public Ast visitEOpCmp(napParser.ECmpContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary cmp = OpBinary.EQ;
@@ -211,7 +211,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEOpMuls(napParser.EOpMulsContext ctx) {
+    public Ast visitEOpMuls(napParser.EMulsContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
@@ -229,7 +229,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEOpAdds(napParser.EOpAddsContext ctx) {
+    public Ast visitEOpAdds(napParser.EAddsContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
