@@ -5,6 +5,7 @@ import parser.*;
 import parser.napParser.*;
 
 import java.util.*;
+import javafx.util.*;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
@@ -24,61 +25,59 @@ public class BuildAST extends napBaseVisitor<Ast> {
 	   return new Program(position(ctx), funcs);
 	}
 
-	@Override
-	public Ast visitFunctionDefinition(napParser.Function_definitionContext ctx) {
-	    String name = (String) visit(ctx.Identifier());
-	    Block body = (Block) visit(ctx.block());
-	    List<Pair<Pair<String, Type>, Boolean>> arguments = new ArrayList<>();
-	    for (ParametersContext pc : ctx.parameters())
-	    		arguments.add((Parameter) visit(pc));
-	    return new FunctionDefinition(position(ctx), name, arguments, body);
-	}
+	// public Ast visitFunctionDefinition(napParser.Function_definitionContext ctx) {
+	//     String name = visit(ctx.Identifier()).toString();
+	//     Block body = (Block) visit(ctx.block());
+	//     List<Parameter> arguments = new ArrayList<>();
+	//     for (ParametersContext pc : ctx.parameter())
+	//     		arguments.add((Parameter) visit(pc));
+	//     return new FunctionDefinition(position(ctx), name, arguments, body);
+	// }
 
 	@Override
 	public Ast visitBlock(napParser.BlockContext ctx) {
 	  List<Statement> statements = new ArrayList<>();
 	  for (StatementContext stm : ctx.statement())
 	      statements.add((Statement) stm.accept(this));
-	  return new Block(statements);
+	  return new Block(position(ctx), statements);
+	}
+
+	public Ast visitTInt(napParser.TIntContext ctx) {
+	   return new TypBasic(BasicType.INT);
 	}
 
 	@Override
-	public Ast visitTINT(napParser.TINTContext ctx) {
-	   return new Typ(TypBasic.INTEGER);
+	public Ast visitTBool(napParser.TBoolContext ctx) {
+	   return new TypBasic(BasicType.BOOL);
 	}
 
 	@Override
-	public Ast visitTBOOL(napParser.TBOOLContext ctx) {
-	   return new Typ(TypBasic.BOOLEAN);
+	public Ast visitTChar(napParser.TCharContext ctx) {
+	    return new TypBasic(BasicType.CHAR);
 	}
 
 	@Override
-	public Ast visitTCHAR(napParser.TCHARContext ctx) {
-	    return new Typ(TypBasic.CHARACTER);
+	public Ast visitTFloat(napParser.TFloatContext ctx) {
+	    return new TypBasic(BasicType.FLOAT);
 	}
 
 	@Override
-	public Ast visitTFLOAT(napParser.TFLOATContext ctx) {
-	    return new Typ(TypBasic.FLOAT);
+	public Ast visitTByte(napParser.TByteContext ctx) {
+	    return new TypBasic(BasicType.BYTE);
 	}
 
-	@Override
-	public Ast visitTBYTE(napParser.TBYTEContext ctx) {
-	    return new Typ(TypBasic.BYTE);
-	}
+	// @Override
+	// public Ast visitTArray(napParser.TArrayContext ctx) {
+	//     return new TypArray(BasicType);
+	// }
 
-	@Override
-	public Ast visitTARRAY(napParser.TARRAYContext ctx) {
-	    return new TypArr(TypBasic.ARRAY);
-	}
-
-	@Override
-	public Ast visitDeclaration(napParser.DeclarationContext ctx) {
-	    String name = (String) visit(ctx.Identifier());
-	    Optional<Expression> val = (Expression) ctx.expression;
-	    Type type = (Type) visit(ctx.Type());
-	    return new Declaration(position(ctx), name, type, val);
-    }
+	// @Override
+	// public Ast visitDeclaration(napParser.DeclarationContext ctx) {
+	//     String name = visit(ctx.Identifier()).toString();
+	//     Optional<Expression> val = (Optional<Expression>) ctx.expr();
+	//     Type type = (Type) visit(ctx.Type());
+	//     return new Declaration(position(ctx), name, type, val);
+    // }
 
     @Override
     public Ast visitStmAssign(napParser.IAssignContext ctx) {
@@ -152,21 +151,18 @@ public class BuildAST extends napBaseVisitor<Ast> {
         return new EAssignop(position(ctx), OpBinary.EQ, exp, prefix);
     }
 
-    @Override
     public Ast visitEOpAnd(napParser.EAndContext ctx) {
         Expression left = (Expression) visit(ctx.expr(0));
         Expression right = (Expression) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
 
-    @Override
     public Ast visitEOpOr(napParser.EOrContext ctx) {
         Expression left = (Expression) visit(ctx.expr(0));
         Expression right = (Expression) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
     }
 
-    @Override
     public Ast visitEOpCmp(napParser.ECmpContext ctx) {
         Expression left = (Expression) visit(ctx.expr(0));
         Expression right = (Expression) visit(ctx.expr(1));
@@ -194,7 +190,6 @@ public class BuildAST extends napBaseVisitor<Ast> {
         return new ExpBinop(position(ctx), left, cmp, right);
     }
 
-    @Override
     public Ast visitEOpMuls(napParser.EMulsContext ctx) {
         Expression left = (Expression) visit(ctx.expr(0));
         Expression right = (Expression) visit(ctx.expr(1));
@@ -212,7 +207,6 @@ public class BuildAST extends napBaseVisitor<Ast> {
         return new ExpBinop(position(ctx), left, op, right);
     }
 
-    @Override
     public Ast visitEOpAdds(napParser.EAddsContext ctx) {
         Expression left = (Expression) visit(ctx.expr(0));
         Expression right = (Expression) visit(ctx.expr(1));
