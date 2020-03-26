@@ -126,7 +126,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
       public Ast visitSTMWhile(napParser.IWhileContext ctx) {
           Exp condition = (Exp) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
-     	doWhile = (boolean) visit(ctx.boolean());
+     	Bool doWhile = (Bool) visit(ctx.boolean());
           return new STMWhile(position(ctx), condition, body, doWhile);
       }
 
@@ -230,7 +230,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     // End Binop ///////////////////////////////////////////
-    
+
     @Override
     public Ast visitEBool(napParser.EBoolContext ctx) {
         return new ExpBool(position(ctx),
