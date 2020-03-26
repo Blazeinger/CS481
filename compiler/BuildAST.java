@@ -71,111 +71,104 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 	public Ast visitTARRAY(napParser.TARRAYContext ctx) {
 	    return new TypArr(TypBasic.ARRAY);
 	}
-
+//
 	@Override
 	public Ast visitDeclaration(napParser.StatementContext ctx) {
 	    String name = (String) visit(ctx.Identifier());
 	    Optional<Expression> val = (Expression) ctx.expression;
 	    Type type = (Type) visit(ctx.Type());
 	    return new Declaration(position(ctx), name, type, val);
-	}
+    }
 
-	@Override
-	public Ast visitSTMAssign(napParser.IAssignContext ctx) {
-	   String var = ctx.Identifier().toString();
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new StmAssign(position(ctx), var, exp);
-	}
+    @Override
+    public Ast visitStmAssign(napParser.IAssignContext ctx) {
+        String var = ctx.Identifier().toString();
+        Exp exp = (Exp) visit(ctx.expr());
+        return new StmAssign(position(ctx), var, exp);
+    }
 
-	@Override
-	public Ast visitStmExp(napParser.IInputContext ctx) {
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new visitSTMExp(position(ctx), exp);
-	}
+    @Override
+    public Ast visitStmExp(napParser.IInputContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new visitSTMExp(position(ctx), exp);
+    }
 
-	@Override
-	public Ast visitStmExp(napParser.IInputContext ctx) {
-	   Type type = (Type) visit(ctx.type());
-	   String var = (Exp) visit(ctx.var());
-	   Exp exp = (Exp) visit(ctx.expr());
-	   Block body = (Block) visit(ctx.block());
-	   return new visitSTMReturn(position(ctx), type, var, exp, body);
-	}
+    @Override
+    public Ast visitStmExp(napParser.IInputContext ctx) {
+        Type type = (Type) visit(ctx.type());
+        String var = (Exp) visit(ctx.var());
+        Exp exp = (Exp) visit(ctx.expr());
+        Block body = (Block) visit(ctx.block());
+        return new visitStmReturn(position(ctx), type, var, exp, body);
+    }
 
-	@Override
-	public Ast visitStmIf(napParser.IIfContext ctx) {
-	   Exp condition = (Exp) visit(ctx.expr());
-	   Block then_branch = (Block) visit(ctx.block(0));
-	   Block else_branch = (Block) visit(ctx.block(1));
-	   return new InsIf(position(ctx), condition,
-	           then_branch, else_branch);
-	}
+    @Override
+    public Ast visitStmIf(napParser.IIfContext ctx) {
+        Exp condition = (Exp) visit(ctx.expr());
+        Block then_branch = (Block) visit(ctx.block(0));
+        Block else_branch = (Block) visit(ctx.block(1));
+        return new StmIf(position(ctx), condition,
+                then_branch, else_branch);
+    }
 
-	@Override
-	public Ast visitStmPrint(napParser.IPrintContext ctx) {
-	   Type type = (Type) visit(ctx.type());
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new StmPrint(position(ctx), type, exp);
-	}
+    @Override
+    public Ast visitStmPrint(napParser.IPrintContext ctx) {
+        Type type = (Type) visit(ctx.type());
+        Exp exp = (Exp) visit(ctx.expr());
+        return new StmPrint(position(ctx), type, exp);
+    }
 
-	@Override
-	public Ast visitStmPrint(napParser.IPrintContext ctx) {
-	   Type type = (Type) visit(ctx.type());
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new StmPrint(position(ctx), type, exp);
-	}
+    @Override
+    public Ast visitStmRead(napParser.IPrintContext ctx) {
+        Type type = (Type) visit(ctx.type());
+        Exp exp = (Exp) visit(ctx.expr());
+        return new StmRead(position(ctx), type, exp);
+    }
 
-	@Override
-	public Ast visitStmRead(napParser.IPrintContext ctx) {
-	   Type type = (Type) visit(ctx.type());
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new StmRead(position(ctx), type, exp);
-	}
+    @Override
+    public Ast visitStmReturn(napParser.IInputContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new visitSTMReturn(position(ctx), exp);
+    }
 
-	@Override
-	public Ast visitStmReturn(napParser.IInputContext ctx) {
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new visitSTMReturn(position(ctx), exp);
-	}
+      @Override
+      public Ast visitSTMWhile(napParser.IWhileContext ctx) {
+          Exp condition = (Exp) visit(ctx.expr());
+          Block body = (Block) visit(ctx.block());
+          boolean doWhile = (boolean) visit(ctx.boolean());
+          return new visitSTMWhile(position(ctx), condition, body, doWhile);
+      }
 
-	 @Override
-	 public Ast visitSTMWhile(napParser.IWhileContext ctx) {
-	     Exp condition = (Exp) visit(ctx.expr());
-	     Block body = (Block) visit(ctx.block());
-	     boolean doWhile = (boolean) visit(ctx.boolean());
-	     return new visitSTMWhile(position(ctx), condition, body, doWhile);
-	 }
+    @Override
+    public Ast visitEId(napParser.EIdentifierContext ctx) {
+        return new ExpVar(position(ctx), ctx.Identifier().toString());
+    }
 
-	@Override
-	public Ast visitEId(napParser.EIdentifierContext ctx) {
-	   return new ExpVar(position(ctx), ctx.Identifier().toString());
-	}
+    @Override // TODO: Find Context
+    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new ExpUnop(position(ctx), OpUnary.NOT, exp);
+    }
 
-	@Override // TODO: Find Context
-	public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new ExpUnop(position(ctx), OpUnary.NOT, exp);
-	}
+    @Override // TODO: Find Context
+    public Ast visitEOpMin(napParser.EOpMinContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
+    }
 
-	@Override // TODO: Find Context
-	public Ast visitEOpMin(napParser.EOpMinContext ctx) {
-	   Exp exp = (Exp) visit(ctx.expr());
-	   return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
-	}
+    @Override
+    public Ast visitEOpOr(napParser.EOrContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        return new ExpBinop(position(ctx), left, OpBinary.OR, right);
+    }
 
-	@Override
-	public Ast visitEOpOr(napParser.EOrContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   return new ExpBinop(position(ctx), left, OpBinary.OR, right);
-	}
-
-	@Override
-	public Ast visitEInt(napParser.EIntContext ctx) {
-	   return new ExpInt(position(ctx),
+    @Override
+    public Ast visitEInt(napParser.EIntContext ctx) {
+        return new ExpInt(position(ctx),
 			  Integer.parseInt(ctx.IConstant().toString()));
 	}
-
+//
 	@Override
 	public Ast visitEBool(napParser.EBoolContext ctx) {
 	   return new ExpBool(position(ctx),
