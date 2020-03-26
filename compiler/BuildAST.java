@@ -2,7 +2,7 @@ package compiler;
 
 import ast.*;
 import parser.*;
-import parser.W2Parser.*;
+import parser.napParser.*;
 
 import java.util.*;
 
@@ -17,7 +17,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitProgram(W2Parser.ProgramContext ctx) {
+    public Ast visitProgram(napParser.ProgramContext ctx) {
         List<FunctionDefinition> funcs = new ArrayList<>();
         for (Function_definitionContext dc : ctx.function_definition())
             funcs.add((FunctionDefinition) visit(dc));
@@ -25,7 +25,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitFunctionDefinition(W2Parser.ProgramContext ctx) {
+    public Ast visitFunctionDefinition(napParser.ProgramContext ctx) {
 	    String name = (String) visit(ctx.Identifier());
 	    Block body = (Block) visit(ctx.block());
 	    List<Pair<Pair<String, Type>, Boolean>> arguments = new ArrayList<>();
@@ -35,7 +35,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
    @Override
-   public Ast visitBlock(W2Parser.BlockContext ctx) {
+   public Ast visitBlock(napParser.BlockContext ctx) {
        List<Statement> statements = new ArrayList<>();
        for (StatementContext stm : ctx.statement())
            statements.add((Statement) stm.accept(this));
@@ -43,37 +43,37 @@ public class BuildAST extends W2BaseVisitor<Ast> {
    }
 
     @Override
-    public Ast visitTINT(W2Parser.TINTContext ctx) {
+    public Ast visitTINT(napParser.TINTContext ctx) {
         return new Typ(TypBasic.INTEGER);
     }
 
     @Override
-    public Ast visitTBOOL(W2Parser.TBOOLContext ctx) {
+    public Ast visitTBOOL(napParser.TBOOLContext ctx) {
         return new Typ(TypBasic.BOOLEAN;
     }
 
     @Override
-    public Ast visitTCHAR(W2Parser.TCHARContext ctx) {
+    public Ast visitTCHAR(napParser.TCHARContext ctx) {
 	    return new Typ(TypBasic.CHARACTER);
     }
 
     @Override
-    public Ast visitTFLOAT(W2Parser.TFLOATContext ctx) {
+    public Ast visitTFLOAT(napParser.TFLOATContext ctx) {
 	    return new Typ(TypBasic.FLOAT);
     }
 
     @Override
-    public Ast visitTBYTE(W2Parser.TBYTEContext ctx) {
+    public Ast visitTBYTE(napParser.TBYTEContext ctx) {
 	    return new Typ(TypBasic.BYTE);
     }
 
     @Override
-    public Ast visitTARRAY(W2Parser.TARRAYContext ctx) {
+    public Ast visitTARRAY(napParser.TARRAYContext ctx) {
 	    return new TypArr(TypBasic.ARRAY);
     }
 
     @Override
-    public Ast visitDeclaration(W2Parser.StatementContext ctx) {
+    public Ast visitDeclaration(napParser.StatementContext ctx) {
 	    String name = (String) visit(ctx.Identifier());
 	    Optional<Expression> val = (Expression) ctx.expression;
 	    Type type = (Type) visit(ctx.Type());
@@ -81,14 +81,19 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitIAssign(W2Parser.IAssignContext ctx) {
+    public Ast visitExprArrAccess(napParser.StatementContext ctx) {
+	    
+    }
+
+    @Override
+    public Ast visitIAssign(napParser.IAssignContext ctx) {
         String var = ctx.Identifier().toString();
         Exp exp = (Exp) visit(ctx.expr());
         return new InsAssign(position(ctx), var, exp);
     }
 
     @Override
-    public Ast visitIIf(W2Parser.IIfContext ctx) {
+    public Ast visitIIf(napParser.IIfContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
         Block else_branch = (Block) visit(ctx.block(1));
@@ -97,76 +102,76 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitIWhile(W2Parser.IWhileContext ctx) {
+    public Ast visitIWhile(napParser.IWhileContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block body = (Block) visit(ctx.block());
         return new InsWhile(position(ctx), condition, body);
     }
 
     @Override
-    public Ast visitIPrint(W2Parser.IPrintContext ctx) {
+    public Ast visitIPrint(napParser.IPrintContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new InsPrint(position(ctx), exp);
     }
 
     @Override
-    public Ast visitIInput(W2Parser.IInputContext ctx) {
+    public Ast visitIInput(napParser.IInputContext ctx) {
         String var = ctx.Identifier().toString();
         return new InsInput(position(ctx), var);
     }
 
     @Override
-    public Ast visitEId(W2Parser.EIdContext ctx) {
+    public Ast visitEId(napParser.EIdContext ctx) {
         return new ExpVar(position(ctx), ctx.Identifier().toString());
     }
 
     @Override
-    public Ast visitEOpNeg(W2Parser.EOpNegContext ctx) {
+    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.NOT, exp);
     }
 
     @Override
-    public Ast visitEOpMin(W2Parser.EOpMinContext ctx) {
+    public Ast visitEOpMin(napParser.EOpMinContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
     }
 
     @Override
-    public Ast visitEOpOr(W2Parser.EOpOrContext ctx) {
+    public Ast visitEOpOr(napParser.EOpOrContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
     }
 
     @Override
-    public Ast visitEInt(W2Parser.EIntContext ctx) {
+    public Ast visitEInt(napParser.EIntContext ctx) {
         return new ExpInt(position(ctx),
 			  Integer.parseInt(ctx.IConstant().toString()));
     }
 
     @Override
-    public Ast visitEBool(W2Parser.EBoolContext ctx) {
+    public Ast visitEBool(napParser.EBoolContext ctx) {
         return new ExpBool(position(ctx),
 			   Boolean.parseBoolean(ctx.BConstant().toString()));
     }
 
     @Override
-    public Ast visitEOpAnd(W2Parser.EOpAndContext ctx) {
+    public Ast visitEOpAnd(napParser.EOpAndContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
-		       
+
     @Override
-    public Ast visitEOpOr(W2Parser.EOpOrContext ctx) {
+    public Ast visitEOpOr(napParser.EOpOrContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.OR, right);
     }
 
     @Override
-    public Ast visitEOpCmp(W2Parser.EOpCmpContext ctx) {
+    public Ast visitEOpCmp(napParser.EOpCmpContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary cmp = OpBinary.EQ;
@@ -194,12 +199,12 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEPar(W2Parser.EParContext ctx) {
+    public Ast visitEPar(napParser.EParContext ctx) {
         return (Exp) visit(ctx.expr());
     }
 
     @Override
-    public Ast visitEOpMuls(W2Parser.EOpMulsContext ctx) {
+    public Ast visitEOpMuls(napParser.EOpMulsContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
@@ -217,7 +222,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitEOpAdds(W2Parser.EOpAddsContext ctx) {
+    public Ast visitEOpAdds(napParser.EOpAddsContext ctx) {
         Exp left = (Exp) visit(ctx.expr(0));
         Exp right = (Exp) visit(ctx.expr(1));
         OpBinary op = null;
