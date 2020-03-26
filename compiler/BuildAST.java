@@ -71,7 +71,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
 	public Ast visitTARRAY(napParser.TARRAYContext ctx) {
 	    return new TypArr(TypBasic.ARRAY);
 	}
-//
+
 	@Override
 	public Ast visitDeclaration(napParser.StatementContext ctx) {
 	    String name = (String) visit(ctx.Identifier());
@@ -94,15 +94,6 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitStmExp(napParser.IInputContext ctx) {
-        Type type = (Type) visit(ctx.type());
-        String var = (Exp) visit(ctx.var());
-        Exp exp = (Exp) visit(ctx.expr());
-        Block body = (Block) visit(ctx.block());
-        return new visitStmReturn(position(ctx), type, var, exp, body);
-    }
-
-    @Override
     public Ast visitStmIf(napParser.IIfContext ctx) {
         Exp condition = (Exp) visit(ctx.expr());
         Block then_branch = (Block) visit(ctx.block(0));
@@ -119,14 +110,14 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
-    public Ast visitStmRead(napParser.IPrintContext ctx) {
+    public Ast visitStmRead(napParser.IInputContext ctx) {
         Type type = (Type) visit(ctx.type());
         Exp exp = (Exp) visit(ctx.expr());
         return new StmRead(position(ctx), type, exp);
     }
 
     @Override
-    public Ast visitStmReturn(napParser.IInputContext ctx) {
+    public Ast visitStmReturn(napParser.IReturnContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
         return new visitSTMReturn(position(ctx), exp);
     }
@@ -168,7 +159,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         return new ExpInt(position(ctx),
 			  Integer.parseInt(ctx.IConstant().toString()));
 	}
-//
+
 	@Override
 	public Ast visitEBool(napParser.EBoolContext ctx) {
 	   return new ExpBool(position(ctx),
