@@ -90,7 +90,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmExp(napParser.IInputContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new visitSTMExp(position(ctx), exp);
+        return new STMExp(position(ctx), exp);
     }
 
     @Override
@@ -119,32 +119,45 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmReturn(napParser.IReturnContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new visitSTMReturn(position(ctx), exp);
+        return new STMReturn(position(ctx), exp);
     }
 
       @Override
       public Ast visitSTMWhile(napParser.IWhileContext ctx) {
           Exp condition = (Exp) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
-          boolean doWhile = (boolean) visit(ctx.boolean());
-          return new visitSTMWhile(position(ctx), condition, body, doWhile);
+     	doWhile = (boolean) visit(ctx.boolean());
+          return new STMWhile(position(ctx), condition, body, doWhile);
       }
 
     @Override
-    public Ast visitEVar(napParser.EIdentifierContext ctx) {
-        return new ExpVar(position(ctx), ctx.Identifier().toString());
+    public Ast visitEArrAccess(napParser.EIdentifierContext ctx) {
+        Exp array = (Exp) visit(ctx.expr(0));
+        Exp index = (Exp) visit(ctx.expr(1));
+        return new EArrAccess(position(ctx), array, index);
     }
 
-    @Override // TODO: Find Context
-    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
-        Exp exp = (Exp) visit(ctx.expr());
-        return new ExpUnop(position(ctx), OpUnary.NOT, exp);
+    @Override
+    public Ast visitEEnum(napParser.EIdentifierContext ctx) {
+        List<Exp> exps = new ArrayList<>();
+        for (ExprContext ec : ctx.expr())
+            exps.add((Expr) visit(ec));
+        return new Program(position(ctx), exps);
     }
 
-    @Override // TODO: Find Context
-    public Ast visitEOpMin(napParser.EOpMinContext ctx) {
+    @Override
+    public Ast visitEAssignop(napParser.EIdentifierContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
+        boolean prefix = (boolean) visit(ctx.boolean());
+        return new EAssignop(position(ctx), OpBinary.EQ, exp, prefix);
+    }
+
+    // Start BINOP //////////////////////////////////////////////////
+    @Override
+    public Ast visitEOpAnd(napParser.EAndContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
 
     @Override
@@ -155,95 +168,128 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     }
 
     @Override
+    public Ast visitEOpCmp(napParser.ECmpContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        OpBinary cmp = OpBinary.EQ;
+        switch (ctx.op.getType()) {
+            case napLexer.NEQ:
+                cmp = OpBinary.NEQ;
+                break;
+            case napLexer.EQ:
+                cmp = OpBinary.EQ;
+                break;
+            case napLexer.LT:
+                cmp = OpBinary.LT;
+                break;
+            case napLexer.GT:
+                cmp = OpBinary.GT;
+                break;
+            case napLexer.LE:
+                cmp = OpBinary.LE;
+                break;
+            case napLexer.GE:
+                cmp = OpBinary.GE;
+                break;
+        }
+        return new ExpBinop(position(ctx), left, cmp, right);
+    }
+
+    @Override
+    public Ast visitEOpMuls(napParser.EMulsContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        OpBinary op = null;
+        switch (ctx.op.getType()) {
+            case napLexer.DIV:
+                op = OpBinary.DIV;
+                break;
+            case napLexer.MOD:
+                op = OpBinary.MOD;
+                break;
+            case napLexer.MUL:
+                op = OpBinary.MUL;
+        }
+        return new ExpBinop(position(ctx), left, op, right);
+    }
+
+    @Override
+    public Ast visitEOpAdds(napParser.EAddsContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        OpBinary op = null;
+        switch (ctx.op.getType()) {
+            case napLexer.SUB:
+                op = OpBinary.SUB;
+                break;
+            case napLexer.ADD:
+                op = OpBinary.ADD;
+                break;
+        }
+        return new ExpBinop(position(ctx), left, op, right);
+    }
+
+    // End Binop ///////////////////////////////////////////
+    
+    @Override
+    public Ast visitEBool(napParser.EBoolContext ctx) {
+        return new ExpBool(position(ctx),
+			  Boolean.parseBoolean(ctx.BConstant().toString()));
+    }
+
+
+    @Override
+    public Ast visitEChar(napParser.ECharContext ctx) {
+        return new ExpChar(position(ctx),
+			  Character.parseCharacter(ctx.CConstant().toString()));
+    }
+
+    @Override
+    public Ast ExpFuncCall(napParser.EIdentifierContext ctx) {
+        String name = (String) visit(ctx.Identifier());
+        List<Exp> arguments = new ArrayList<>();
+        for (ExprContext ec : ctx.expr())
+            arguments.add((Expr) visit(ec));
+        return new FuncCall(position(ctx), name, arguments);
+    }
+
+    @Override
     public Ast visitEInt(napParser.EIntContext ctx) {
         return new ExpInt(position(ctx),
 			  Integer.parseInt(ctx.IConstant().toString()));
-	}
+    }
 
-	@Override
-	public Ast visitEBool(napParser.EBoolContext ctx) {
-	   return new ExpBool(position(ctx),
-			   Boolean.parseBoolean(ctx.BConstant().toString()));
-	}
+    @Override
+    public Ast visitELength(napParser.EIntContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new ELength(position(ctx), exp);
+    }
 
-	@Override
-	public Ast visitEOpAnd(napParser.EAndContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   return new ExpBinop(position(ctx), left, OpBinary.AND, right);
-	}
+    @Override
+    public Ast visitENew(napParser.EIdentifierContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        TypBasic type = (TypBasic) visit(ctx.typbasic());
+        return new ENew(position(ctx),type,  exp);
+    }
 
-	@Override
-	public Ast visitEOpOr(napParser.EOrContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   return new ExpBinop(position(ctx), left, OpBinary.OR, right);
-	}
+    @Override
+    public Ast visitEString(napParser.EIntContext ctx) {
+        return new ExpString(position(ctx), ctx.StringConstant);
+    }
 
-	@Override
-	public Ast visitEOpCmp(napParser.ECmpContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   OpBinary cmp = OpBinary.EQ;
-	   switch (ctx.op.getType()) {
-	       case napLexer.NEQ:
-	           cmp = OpBinary.NEQ;
-	           break;
-	       case napLexer.EQ:
-	           cmp = OpBinary.EQ;
-	           break;
-	       case napLexer.LT:
-	           cmp = OpBinary.LT;
-	           break;
-	       case napLexer.GT:
-	           cmp = OpBinary.GT;
-	           break;
-	       case napLexer.LE:
-	           cmp = OpBinary.LE;
-	           break;
-	       case napLexer.GE:
-	           cmp = OpBinary.GE;
-	           break;
-	   }
-	   return new ExpBinop(position(ctx), left, cmp, right);
-	}
+    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new ExpUnop(position(ctx), OpUnary.NOT, exp);
+    }
 
-	@Override
-	public Ast visitEPar(napParser.EParContext ctx) {
-	   return (Exp) visit(ctx.expr());
-	}
+    public Ast visitEOpMin(napParser.EOpMinContext ctx) {
+        Exp exp = (Exp) visit(ctx.expr());
+        return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
+    }
 
-	@Override
-	public Ast visitEOpMuls(napParser.EMulsContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   OpBinary op = null;
-	   switch (ctx.op.getType()) {
-	       case napLexer.DIV:
-	           op = OpBinary.DIV;
-	           break;
-	       case napLexer.MOD:
-	           op = OpBinary.MOD;
-	           break;
-	       case napLexer.MUL:
-	           op = OpBinary.MUL;
-	   }
-	   return new ExpBinop(position(ctx), left, op, right);
-	}
+    @Override
+    public Ast visitEVar(napParser.EIdentifierContext ctx) {
+        return new ExpVar(position(ctx), ctx.Identifier().toString());
+    }
 
-	@Override
-	public Ast visitEOpAdds(napParser.EAddsContext ctx) {
-	   Exp left = (Exp) visit(ctx.expr(0));
-	   Exp right = (Exp) visit(ctx.expr(1));
-	   OpBinary op = null;
-	   switch (ctx.op.getType()) {
-	       case napLexer.SUB:
-	           op = OpBinary.SUB;
-	           break;
-	       case napLexer.ADD:
-	           op = OpBinary.ADD;
-	           break;
-	   }
-	   return new ExpBinop(position(ctx), left, op, right);
-	}
 }
