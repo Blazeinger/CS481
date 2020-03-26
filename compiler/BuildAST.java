@@ -157,6 +157,13 @@ public class BuildAST extends W2BaseVisitor<Ast> {
         Exp right = (Exp) visit(ctx.expr(1));
         return new ExpBinop(position(ctx), left, OpBinary.AND, right);
     }
+		       
+    @Override
+    public Ast visitEOpOr(W2Parser.EOpOrContext ctx) {
+        Exp left = (Exp) visit(ctx.expr(0));
+        Exp right = (Exp) visit(ctx.expr(1));
+        return new ExpBinop(position(ctx), left, OpBinary.OR, right);
+    }
 
     @Override
     public Ast visitEOpCmp(W2Parser.EOpCmpContext ctx) {
