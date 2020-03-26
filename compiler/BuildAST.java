@@ -90,7 +90,7 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmExp(napParser.IInputContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new visitSTMExp(position(ctx), exp);
+        return new STMExp(position(ctx), exp);
     }
 
     @Override
@@ -119,15 +119,15 @@ public class BuildAST extends W2BaseVisitor<Ast> {
     @Override
     public Ast visitStmReturn(napParser.IReturnContext ctx) {
         Exp exp = (Exp) visit(ctx.expr());
-        return new visitSTMReturn(position(ctx), exp);
+        return new STMReturn(position(ctx), exp);
     }
 
       @Override
       public Ast visitSTMWhile(napParser.IWhileContext ctx) {
           Exp condition = (Exp) visit(ctx.expr());
           Block body = (Block) visit(ctx.block());
-          boolean doWhile = (boolean) visit(ctx.boolean());
-          return new visitSTMWhile(position(ctx), condition, body, doWhile);
+     	doWhile = (boolean) visit(ctx.boolean());
+          return new STMWhile(position(ctx), condition, body, doWhile);
       }
 
     @Override
