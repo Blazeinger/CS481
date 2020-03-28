@@ -6,3 +6,5 @@ compiler:
 - PrettyPrinter: a printer
 - Example: NAP programs directly built
            using the AST classes
+
+We are having issues with some of the language definitions, thus we are not sure how to fix the parser

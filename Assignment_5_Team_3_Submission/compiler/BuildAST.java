@@ -80,7 +80,7 @@ public class BuildAST extends napBaseVisitor<Ast> {
     // }
 
     public Ast visitStmAssign(napParser.IAssignContext ctx) {
-        String var = ctxf.Identifier().toString();
+        String var = ctx.Identifier().toString();
         Expression exp = (Expression) visit(ctx.expr());
         return new StmAssign(position(ctx), var, exp);
     }
