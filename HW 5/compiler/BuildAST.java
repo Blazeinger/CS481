@@ -1,295 +1,450 @@
 package compiler;
 
 import ast.*;
-import parser.*;
-import parser.napParser.*;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import parser.napLexer;
+import parser.napParser;
+import parser.napVisitor;
+import util.Pair;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.*;
+public class BuildAST extends AbstractParseTreeVisitor<Ast> implements napVisitor<Ast>
+{
+    // Building an AST Position from an ANTLR Context
+    private static Position position(ParserRuleContext ctx) {
+        return new Position(ctx.start.getLine(),
+                ctx.start.getCharPositionInLine());
+    }
 
-public class BuildAST extends napBaseVisitor<Ast> {
+    // Several ParseTree node are basically binary operation applications.
+    // getOpBinary and binary are two private methods used to
+    // avoid code duplication when these ParseTree nodes will be visited.
+    private OpBinary getOpBinary(int opType) {
+        switch(opType) {
+            case napLexer.ADD: return OpBinary.ADD;
+            case napLexer.SUB: return OpBinary.SUB;
+            case napLexer.MUL: return OpBinary.MUL;
+            case napLexer.DIV: return OpBinary.DIV;
+            case napLexer.MOD: return OpBinary.MOD;
+            case napLexer.AND: return OpBinary.AND;
+            case napLexer.OR: return OpBinary.OR;
+            case napLexer.NEQ: return OpBinary.NEQ;
+            case napLexer.LT: return OpBinary.LT;
+            case napLexer.LE: return OpBinary.LE;
+            case napLexer.GT: return OpBinary.GT;
+            case napLexer.GE: return OpBinary.GE;
+            default: return OpBinary.EQ;
+        }
+    }
 
-	private static Position position(ParserRuleContext ctx) {
-	   return new Position(ctx.start.getLine(),
-	           ctx.start.getCharPositionInLine());
-	}
+    private Ast binary(Position pos, napParser.ExprContext expr0, napParser.ExprContext expr1, int opType) {
+        Expression left = (Expression) visit(expr0);
+        Expression right = (Expression) visit(expr1);
+        return new ExpBinop(pos, left, getOpBinary(opType), right);
+    }
 
-	@Override
-	public Ast visitProgram(napParser.ProgramContext ctx) {
-	   List<FunctionDefinition> funcs = new ArrayList<>();
-	   for (Function_definitionContext dc : ctx.function_definition())
-	       funcs.add((FunctionDefinition) visit(dc));
-	   return new Program(position(ctx), funcs);
-	}
 
-	@Override
-	public Ast visitFunctionDefinition(napParser.ProgramContext ctx) {
-	    String name = (String) visit(ctx.Identifier());
-	    Block body = (Block) visit(ctx.block());
-	    List<Pair<Pair<String, Type>, Boolean>> arguments = new ArrayList<>();
-	    for (ParametersContext pc : ctx.parameters())
-	    		arguments.add((Parameter) visit(pc));
-	    return new FunctionDefinition(position(ctx), name, arguments, body);
-	}
+    // ======================================================
+    // Type
+    // ======================================================
 
-	@Override
-	public Ast visitBlock(napParser.BlockContext ctx) {
-	  List<Statement> statements = new ArrayList<>();
-	  for (StatementContext stm : ctx.statement())
-	      statements.add((Statement) stm.accept(this));
-	  return new Block(statements);
-	}
-
-	@Override
-	public Ast visitTINT(napParser.TINTContext ctx) {
-	   return new Typ(TypBasic.INTEGER);
-	}
-
-	@Override
-	public Ast visitTBOOL(napParser.TBOOLContext ctx) {
-	   return new Typ(TypBasic.BOOLEAN);
-	}
-
-	@Override
-	public Ast visitTCHAR(napParser.TCHARContext ctx) {
-	    return new Typ(TypBasic.CHARACTER);
-	}
-
-	@Override
-	public Ast visitTFLOAT(napParser.TFLOATContext ctx) {
-	    return new Typ(TypBasic.FLOAT);
-	}
-
-	@Override
-	public Ast visitTBYTE(napParser.TBYTEContext ctx) {
-	    return new Typ(TypBasic.BYTE);
-	}
-
-	@Override
-	public Ast visitTARRAY(napParser.TARRAYContext ctx) {
-	    return new TypArr(TypBasic.ARRAY);
-	}
-
-	@Override
-	public Ast visitDeclaration(napParser.StatementContext ctx) {
-	    String name = (String) visit(ctx.Identifier());
-	    Optional<Expression> val = (Expression) ctx.expression;
-	    Type type = (Type) visit(ctx.Type());
-	    return new Declaration(position(ctx), name, type, val);
+    @Override
+    public Ast visitTInt(napParser.TIntContext ctx) {
+        return new ast.Type(position(ctx), type.Basic.INT);
     }
 
     @Override
-    public Ast visitStmAssign(napParser.IAssignContext ctx) {
-        String var = ctx.Identifier().toString();
-        Expression exp = (Expression) visit(ctx.expr());
-        return new StmAssign(position(ctx), var, exp);
+    public Ast visitTBool(napParser.TBoolContext ctx) {
+        return new ast.Type(position(ctx), type.Basic.BOOL);
     }
 
     @Override
-    public Ast visitStmExp(napParser.IInputContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        return new STMExp(position(ctx), exp);
+    public Ast visitTChar(napParser.TCharContext ctx) {
+        return new ast.Type(position(ctx), type.Basic.CHAR);
     }
 
     @Override
-    public Ast visitStmIf(napParser.IIfContext ctx) {
-        Expression condition = (Expression) visit(ctx.expr());
-        Block then_branch = (Block) visit(ctx.block(0));
-        Block else_branch = (Block) visit(ctx.block(1));
-        return new StmIf(position(ctx), condition,
-                then_branch, else_branch);
+    public Ast visitTFloat(napParser.TFloatContext ctx) {
+        return new ast.Type(position(ctx), type.Basic.FLOAT);
     }
 
     @Override
-    public Ast visitStmPrint(napParser.IPrintContext ctx) {
+    public Ast visitTByte(napParser.TByteContext ctx) {
+        return new ast.Type(position(ctx), type.Basic.BYTE);
+    }
+
+    @Override
+    public Ast visitTArray(napParser.TArrayContext ctx) {
+        Type type = (Type) ctx.type().accept(this);
+        return new Type(position(ctx), new type.Array(type.type));
+    }
+
+     // ======================================================
+    // Expression
+    // ======================================================
+
+    @Override
+    public Ast visitEBool(napParser.EBoolContext ctx) {
+        int lexerType = ctx.Bool().getSymbol().getType();
+        assert(lexerType == napLexer.TRUE || lexerType == napLexer.FALSE);
+        return new ExpBool(position(ctx), lexerType == napLexer.TRUE);
+    }
+
+    @Override
+    public Ast visitEInt(napParser.EIntContext ctx) {
+        int value = Integer.parseInt(ctx.getText());
+        return new ExpInt(position(ctx), value);
+    }
+
+    @Override
+    public Ast visitEIdentifier(napParser.EIdentifierContext ctx) {
+        return new ExpVar(position(ctx), ctx.getText());
+    }
+
+    private String escaping(String input){
+        return input.replace("\\n", "\n")
+                .replace("\\t", "\t")
+                .replace("\\0", "\0")
+                .replace("\\\"", "\"")
+                .replace("\\'", "'")
+                .replace("\\\\", "\\");
+    }
+
+    @Override
+    // The char constants are represented in the ParseTree by
+    // a string. For example, if the NAP program contains '\n'
+    // the ParseTree will contain a ECharContext node with text "'\\n'"
+    // We have only a few escaped characters in nap.g4:
+    // \n, \t, \\, \', \", \0
+    public Ast visitEChar(napParser.ECharContext ctx) {
+        char c = escaping(ctx.getText()).charAt(1);
+        return new ExpChar(position(ctx), c);
+    }
+
+    @Override
+    public Ast visitEString(napParser.EStringContext ctx) {
+        String escaped = escaping(ctx.getText());
+        return new ExpString(position(ctx), escaped.substring(1, escaped.length()-1));
+    }
+
+    @Override
+    public Ast visitEOpp(napParser.EOppContext ctx) {
+        return new ExpUnop(position(ctx), OpUnary.SUB,
+                (Expression) visit(ctx.expr()));
+    }
+
+    @Override
+    public Ast visitENot(napParser.ENotContext ctx) {
+        return new ExpUnop(position(ctx), OpUnary.NOT,
+                (Expression) visit(ctx.expr()));
+    }
+
+    @Override
+    public Ast visitEMuls(napParser.EMulsContext ctx) {
+        int opType = ctx.op.getType();
+        assert(opType == napLexer.MUL || opType == napLexer.DIV || opType == napLexer.MOD);
+        return binary(position(ctx), ctx.expr(0), ctx.expr(1), opType);
+    }
+
+    @Override
+    public Ast visitEAdds(napParser.EAddsContext ctx) {
+        int opType = ctx.op.getType();
+        assert(opType == napLexer.ADD || opType == napLexer.SUB);
+        return binary(position(ctx), ctx.expr(0), ctx.expr(1), opType);
+    }
+
+    @Override
+    public Ast visitEAnd(napParser.EAndContext ctx) {
+        int opType = ctx.AND().getSymbol().getType();
+        assert(opType == napLexer.AND);
+        return binary(position(ctx), ctx.expr(0), ctx.expr(1), opType);
+    }
+
+    @Override
+    public Ast visitEOr(napParser.EOrContext ctx) {
+        int opType = ctx.OR().getSymbol().getType();
+        assert(opType == napLexer.OR);
+        return binary(position(ctx), ctx.expr(0), ctx.expr(1), opType);
+    }
+
+    @Override
+    public Ast visitECmp(napParser.ECmpContext ctx) {
+        int opType = ctx.op.getType();
+        assert(opType == napLexer.EQ || opType == napLexer.NEQ || opType == napLexer.LT
+                || opType == napLexer.LE || opType == napLexer.GT || opType == napLexer.GE);
+        return binary(position(ctx), ctx.expr(0), ctx.expr(1), opType);
+    }
+
+    private Ast assignmentOperator(Position pos, napParser.ExprContext expr, int opType, boolean prefix){
+        Expression exp = (Expression) visit(expr);
+        OpAssign op = OpAssign.INC;
+        if (opType == napLexer.DECR) op = OpAssign.DEC;
+        return new ExpAssignop(pos, op, exp, prefix);
+    }
+
+    @Override
+    public Ast visitEPrefix(napParser.EPrefixContext ctx) {
+        int opType = ctx.AssignOp().getSymbol().getType();
+        return assignmentOperator(position(ctx), ctx.expr(), opType, true);
+    }
+
+    @Override
+    public Ast visitEPostfix(napParser.EPostfixContext ctx) {
+        int opType = ctx.AssignOp().getSymbol().getType();
+        return assignmentOperator(position(ctx), ctx.expr(), opType, false);
+    }
+
+    @Override
+    public Ast visitEArrayAccess(napParser.EArrayAccessContext ctx) {
+        Expression array = (Expression) visit(ctx.expr(0));
+        Expression index = (Expression) visit(ctx.expr(1));
+        return new ExpArrAccess(position(ctx), array, index);
+    }
+
+    // We manipulate list of expressions in two cases:
+    // array enumerations and function calls.
+    // This private function factorizes the common code
+    private List<Expression> expList(List<napParser.ExprContext> exprs){
+        List<Expression> arguments = new LinkedList<>();
+        for(napParser.ExprContext expr : exprs)
+            arguments.add((Expression)visit(expr));
+        return arguments;
+    }
+
+    // We consider that the application of some predefined functions
+    // are application of some unary operations rather than function application:
+    // byte_of_int, int_of_byte, char_of_byte, byte_of_char, length
+    private static Map<String, OpPredefined> buildPredefined(){
+        Map<String, OpPredefined> predefined = new TreeMap<>();
+        predefined.put("byte_of_int", OpPredefined.BYTE_OF_INT);
+        predefined.put("char_of_byte", OpPredefined.CHAR_OF_BYTE);
+        predefined.put("int_of_byte", OpPredefined.INT_OF_BYTE);
+        predefined.put("byte_of_char", OpPredefined.BYTE_OF_CHAR);
+        predefined.put("length", OpPredefined.LENGTH);
+        return predefined;
+    }
+
+    private static final Map<String, OpPredefined> predefined = buildPredefined();
+
+    private boolean isPredefined(String name){
+        return predefined.get(name) != null;
+    }
+
+    @Override
+    public Ast visitECall(napParser.ECallContext ctx) {
+        String funcName = ctx.Identifier().getText();
+        List<Expression> arguments = expList(ctx.expressions().expr());
+        if (isPredefined(funcName))
+            return new ExpPredefinedCall(position(ctx), predefined.get(funcName), arguments);
+        return new ExpFuncCall(position(ctx), funcName, arguments);
+    }
+
+    @Override
+    public Ast visitEArrayEnumeration(napParser.EArrayEnumerationContext ctx) {
+        return new ExpArrEnum(position(ctx), expList(ctx.expressions().expr()));
+    }
+
+    @Override
+    public Ast visitENew(napParser.ENewContext ctx) {
         Type type = (Type) visit(ctx.type());
         Expression exp = (Expression) visit(ctx.expr());
-        return new StmPrint(position(ctx), type, exp);
+        return new ExpNew(position(ctx), type, exp);
     }
 
     @Override
-    public Ast visitStmRead(napParser.IInputContext ctx) {
+    public Ast visitEPar(napParser.EParContext ctx) {
+        return visit(ctx.expr());
+    }
+
+    // ======================================================
+    // Instruction
+    // ======================================================
+
+    private static OpBinary opBinaryOfAssign(int opType){
+        assert(opType == napLexer.AEQ || opType == napLexer.SEQ
+                || opType == napLexer.MEQ || opType == napLexer.DEQ);
+        switch (opType){
+            case napLexer.AEQ: return OpBinary.ADD;
+            case napLexer.SEQ: return OpBinary.SUB;
+            case napLexer.MEQ: return OpBinary.MUL;
+            default: return OpBinary.DIV;
+        }
+    }
+
+    @Override
+    public Ast visitIAssign(napParser.IAssignContext ctx) {
+        Expression left = (Expression) visit(ctx.expr(0));
+        Expression right = (Expression) visit(ctx.expr(1));
+        int opType = ctx.op.getType();
+        if (opType == napLexer.ASSIGN)
+            return new StmAssign(position(ctx), left, right);
+        else
+            return new StmAssign(position(ctx), left, right, opBinaryOfAssign(opType));
+    }
+
+    @Override
+    public Ast visitIFor(napParser.IForContext ctx) {
+        Type type = (Type) visit(ctx.type());
+        String identifier = ctx.Identifier().getText();
+        Expression exp = (Expression) visit(ctx.expr());
+        Block block = (Block) visit(ctx.block());
+        return new StmFor(position(ctx), type, identifier, exp, block);
+    }
+
+    @Override
+    public Ast visitIWhile(napParser.IWhileContext ctx) {
+        Expression condition = (Expression) visit(ctx.expr());
+        Block block = (Block) visit(ctx.block());
+        return StmWhile.While(position(ctx), condition, block);
+    }
+
+    @Override
+    public Ast visitIDoWhile(napParser.IDoWhileContext ctx) {
+        Expression condition = (Expression) visit(ctx.expr());
+        Block block = (Block) visit(ctx.block());
+        return StmWhile.DoWhile(position(ctx), condition, block);
+    }
+
+    @Override
+    public Ast visitIInput(napParser.IInputContext ctx) {
         Type type = (Type) visit(ctx.type());
         Expression exp = (Expression) visit(ctx.expr());
         return new StmRead(position(ctx), type, exp);
     }
 
     @Override
-    public Ast visitStmReturn(napParser.IReturnContext ctx) {
+    public Ast visitIPrint(napParser.IPrintContext ctx) {
+        Type type = (Type) visit(ctx.type());
         Expression exp = (Expression) visit(ctx.expr());
-        return new STMReturn(position(ctx), exp);
-    }
-
-      @Override
-      public Ast visitSTMWhile(napParser.IWhileContext ctx) {
-          Expression condition = (Expression) visit(ctx.expr());
-          Block body = (Block) visit(ctx.block());
-     	Bool doWhile = (Bool) visit(ctx.bool());
-          return new STMWhile(position(ctx), condition, body, doWhile);
-      }
-
-    @Override
-    public Ast visitEArrAccess(napParser.EIdentifierContext ctx) {
-        Expression array = (Expression) visit(ctx.expr(0));
-        Expression index = (Expression) visit(ctx.expr(1));
-        return new EArrAccess(position(ctx), array, index);
+        return new StmPrint(position(ctx), type, exp);
     }
 
     @Override
-    public Ast visitEEnum(napParser.EIdentifierContext ctx) {
-        List<Expression> exps = new ArrayList<>();
-        for (ExprContext ec : ctx.expr())
-            exps.add((Expr) visit(ec));
-        return new Program(position(ctx), exps);
-    }
-
-    @Override
-    public Ast visitEAssignop(napParser.EIdentifierContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        boolean prefix = (boolean) visit(ctx.bool());
-        return new EAssignop(position(ctx), OpBinary.EQ, exp, prefix);
-    }
-
-    // Start BINOP //////////////////////////////////////////////////
-    @Override
-    public Ast visitEOpAnd(napParser.EAndContext ctx) {
-        Expression left = (Expression) visit(ctx.expr(0));
-        Expression right = (Expression) visit(ctx.expr(1));
-        return new ExpBinop(position(ctx), left, OpBinary.AND, right);
-    }
-
-    @Override
-    public Ast visitEOpOr(napParser.EOrContext ctx) {
-        Expression left = (Expression) visit(ctx.expr(0));
-        Expression right = (Expression) visit(ctx.expr(1));
-        return new ExpBinop(position(ctx), left, OpBinary.OR, right);
-    }
-
-    @Override
-    public Ast visitEOpCmp(napParser.ECmpContext ctx) {
-        Expression left = (Expression) visit(ctx.expr(0));
-        Expression right = (Expression) visit(ctx.expr(1));
-        OpBinary cmp = OpBinary.EQ;
-        switch (ctx.op.getType()) {
-            case napLexer.NEQ:
-                cmp = OpBinary.NEQ;
-                break;
-            case napLexer.EQ:
-                cmp = OpBinary.EQ;
-                break;
-            case napLexer.LT:
-                cmp = OpBinary.LT;
-                break;
-            case napLexer.GT:
-                cmp = OpBinary.GT;
-                break;
-            case napLexer.LE:
-                cmp = OpBinary.LE;
-                break;
-            case napLexer.GE:
-                cmp = OpBinary.GE;
-                break;
+    public Ast visitIIf(napParser.IIfContext ctx) {
+        Expression condition = (Expression) visit(ctx.expr());
+        Block then_block = (Block) visit(ctx.block(0));
+        if (ctx.block(1) == null)
+            return new StmIf(position(ctx), condition, then_block);
+        else {
+            Block else_block = (Block) visit(ctx.block(1));
+            return new StmIf(position(ctx), condition, then_block, else_block);
         }
-        return new ExpBinop(position(ctx), left, cmp, right);
     }
 
     @Override
-    public Ast visitEOpMuls(napParser.EMulsContext ctx) {
-        Expression left = (Expression) visit(ctx.expr(0));
-        Expression right = (Expression) visit(ctx.expr(1));
-        OpBinary op = null;
-        switch (ctx.op.getType()) {
-            case napLexer.DIV:
-                op = OpBinary.DIV;
-                break;
-            case napLexer.MOD:
-                op = OpBinary.MOD;
-                break;
-            case napLexer.MUL:
-                op = OpBinary.MUL;
+    public Ast visitIReturn(napParser.IReturnContext ctx) {
+        Expression exp = (Expression) visit(ctx.expr());
+        return new StmReturn(position(ctx), exp);
+    }
+
+    @Override
+    public Ast visitIExpr(napParser.IExprContext ctx) {
+        Expression exp = (Expression) visit(ctx.expr());
+        return new StmExp(position(ctx), exp);
+    }
+
+    // ======================================================
+    // Declaration
+    // ======================================================
+
+    @Override
+    public Ast visitDeclaration(napParser.DeclarationContext ctx) {
+        Type type = (Type) ctx.type().accept(this);
+        String name = ctx.Identifier().getText();
+        if(ctx.expr() == null)
+            return new StmDecl(position(ctx), name, type);
+        else {
+            Expression exp = (Expression) ctx.expr().accept(this);
+            return new StmDecl(position(ctx), name, type, exp);
         }
-        return new ExpBinop(position(ctx), left, op, right);
+    }
+
+    // ======================================================
+    // Statement
+    // ======================================================
+
+    @Override
+    public Ast visitSIns(napParser.SInsContext ctx) {
+        return ctx.instruction().accept(this);
     }
 
     @Override
-    public Ast visitEOpAdds(napParser.EAddsContext ctx) {
-        Expression left = (Expression) visit(ctx.expr(0));
-        Expression right = (Expression) visit(ctx.expr(1));
-        OpBinary op = null;
-        switch (ctx.op.getType()) {
-            case napLexer.SUB:
-                op = OpBinary.SUB;
-                break;
-            case napLexer.ADD:
-                op = OpBinary.ADD;
-                break;
+    public Ast visitSDecl(napParser.SDeclContext ctx) {
+        return ctx.declaration().accept(this);
+    }
+
+    // ======================================================
+    // Block
+    // ======================================================
+
+    @Override
+    public Ast visitBlock(napParser.BlockContext ctx) {
+        List<Statement> statements = new LinkedList<>();
+        for(napParser.StatementContext stm: ctx.statement())
+            statements.add((Statement)visit(stm));
+        return new Block(position(ctx), statements);
+    }
+
+    // ======================================================
+    // Function Definition
+    // ======================================================
+
+    @Override
+    public Ast visitFunction_definition(napParser.Function_definitionContext ctx) {
+        String name = ctx.Identifier().getText();
+        List<Pair<Pair<String, Type>, Boolean>> arguments = new LinkedList<>();
+        for(napParser.ParameterContext arg : ctx.parameters().parameter()){
+            String argName = arg.Identifier().getText();
+            Type argType = (Type) arg.type().accept(this);
+            boolean passByRef = arg.getChildCount() == 3;
+            arguments.add(new Pair<>(new Pair<>(argName, argType), passByRef));
         }
-        return new ExpBinop(position(ctx), left, op, right);
+        Block block = (Block) visit(ctx.block());
+        if (ctx.returnType == null)
+            return new FunctionDefinition(position(ctx), name, arguments, block);
+        else {
+            Type returnType = (Type) visit(ctx.returnType);
+            return new FunctionDefinition(position(ctx), name, arguments, block, returnType);
+        }
     }
 
-    // End Binop ///////////////////////////////////////////
+    // ======================================================
+    // Program
+    // ======================================================
 
     @Override
-    public Ast visitEBool(napParser.EBoolContext ctx) {
-        return new ExpBool(position(ctx),
-			  Boolean.parseBoolean(ctx.BConstant().toString()));
+    public Ast visitProgram(napParser.ProgramContext ctx) {
+        List<FunctionDefinition> functions = new LinkedList<>();
+        for(napParser.Function_definitionContext func : ctx.function_definition())
+            functions.add((FunctionDefinition)visit(func));
+        return new Program(position(ctx), functions);
     }
 
+    // ======================================================
+    // NOT USED
+    // ======================================================
 
     @Override
-    public Ast visitEChar(napParser.ECharContext ctx) {
-        return new ExpChar(position(ctx),
-			  Character.parseCharacter(ctx.CConstant().toString()));
-    }
-
-    @Override
-    public Ast ExpFuncCall(napParser.EIdentifierContext ctx) {
-        String name = (String) visit(ctx.Identifier());
-        List<Expression> arguments = new ArrayList<>();
-        for (ExprContext ec : ctx.expr())
-            arguments.add((Expr) visit(ec));
-        return new FuncCall(position(ctx), name, arguments);
-    }
-
-    @Override
-    public Ast visitEInt(napParser.EIntContext ctx) {
-        return new ExpInt(position(ctx),
-			  Integer.parseInt(ctx.IConstant().toString()));
+    public Ast visitExpressions(napParser.ExpressionsContext ctx) {
+        assert(false) : "The AST builder should not arrive there.";
+        return null;
     }
 
     @Override
-    public Ast visitELength(napParser.EIntContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        return new ExpLength(position(ctx), exp);
+    public Ast visitParameter(napParser.ParameterContext ctx) {
+        assert(false) : "The AST builder should not arrive there.";
+        return null;
     }
 
     @Override
-    public Ast visitENew(napParser.EIdentifierContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        TypBasic type = (TypBasic) visit(ctx.typbasic());
-        return new ENew(position(ctx),type,  exp);
+    public Ast visitParameters(napParser.ParametersContext ctx) {
+        assert(false) : "The AST builder should not arrive there.";
+        return null;
     }
-
-    @Override
-    public Ast visitEString(napParser.EIntContext ctx) {
-        return new ExpString(position(ctx), ctx.StringConstant);
-    }
-
-    public Ast visitEOpNeg(napParser.EOpNegContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        return new ExpUnop(position(ctx), OpUnary.NOT, exp);
-    }
-
-    public Ast visitEOpMin(napParser.EOpMinContext ctx) {
-        Expression exp = (Expression) visit(ctx.expr());
-        return new ExpUnop(position(ctx), OpUnary.MINUS, exp);
-    }
-
-    @Override
-    public Ast visitEVar(napParser.EIdentifierContext ctx) {
-        return new ExpVar(position(ctx), ctx.Identifier().toString());
-    }
-
 }
+

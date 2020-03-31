@@ -1,3 +1,5 @@
+package compiler;
+
 import ast.*;
 import parser.*;
 
@@ -11,14 +13,13 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // FIRST STEP: analysis
         // Creation of the stream of characters
-	InputStream stream;
-	if(args.length == 0)
-	    stream = System.in;
-	else
-	    stream = new FileInputStream(new File(args[0]));
+        InputStream stream;
+        if (args.length == 0)
+            stream = System.in;
+        else
+            stream = new FileInputStream(new File(args[0]));
         CharStream input = CharStreams.fromStream(stream);
         // Creation of the lexer for pico programs
-
         napLexer lexer = new napLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         // Creation of the parser for pico programs
@@ -29,9 +30,9 @@ public class Main {
         // abstract syntax tree
         napVisitor<Ast> buildAST = new BuildAST();
         Program program = (Program) buildAST.visit(tree);
-	if(1 < args.length && args[1].equals("-p"))
-	    System.out.println(program.accept(new PrettyPrinter(2)));
-	else if (1 < args.length && args[1].equals("-i"))
-	    program.accept(new Interpreter());
+        if (1 < args.length && args[1].equals("-p"))
+            System.out.println(program.accept(new PrettyPrinter(2)));
+        else if (1 < args.length && args[1].equals("-i")) {
+		}
     }
 }
