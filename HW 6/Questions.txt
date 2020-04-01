@@ -1,0 +1,12 @@
+1. In Type.java, in your video you said defining one of every type was going to
+	be an issue because of arrays. Can you elaborate on this?
+
+2. Are there binary operations on characters? ('a' < 'b' = boolean value?)
+
+3. Are we implementing floats and bytes?
+
+4. What is sym table builder equivalent to in your w2 example?
+
+5. Do we need to implement a signature in Signatures.java for "input" and "print"?
+
+6. 
