@@ -55,8 +55,6 @@ public class SymbolTableBuilder implements ast.Visitor<Void>{
 		// TODO: implement
 	}
 
-	// TODO: implement visitor methods
-
 	public Void visit(ExpBool exp){
 		return null;
 	}
@@ -82,62 +80,77 @@ public class SymbolTableBuilder implements ast.Visitor<Void>{
 	}
 
 	public Void visit(ExpUnop exp){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpAssignop exp){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpFuncCall exp){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpPredefinedCall exp){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpNew exp){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpArrAccess array){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(ExpArrEnum array){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmIf stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmAssign stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmExp stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmRead stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmPrint stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmReturn stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmWhile stm){
+		// TODO:
 	  return null;
 	}
 
 	public Void visit(StmFor stm){
+		// TODO: add to table <k,v> -> <String, type>
 		return null;
 	}
 
@@ -150,14 +163,18 @@ public class SymbolTableBuilder implements ast.Visitor<Void>{
 	}
 
 	public Void visit(Block block){
+		// TODO: create new symbol table for block
+		//
 		return null;
 	}
 
 	public Void visit(FunctionDefinition fun){
+		// TODO: add symbol to global table
 		return null;
 	}
 
 	public Void visit(Program program){
+		// TODO: initializations of global table, etc...
 		return null;
 	}
 
