@@ -6,29 +6,32 @@ import type.*;
 import java.util.*;
 
 public class Signature {
-    public ArrayList<Pair<type.Type,Boolean>> argTypes;
+    public List<Pair<Pair<String, Type>, Boolean>> argTypes;
     public type.Type returnType;
 
-    private Signature(ArrayList<Pair<type.Type,Boolean>> argTypes,
+    private Signature(List<Pair<Pair<String, Type>, Boolean>> argTypes,
 		      type.Type returnType){
 	this.argTypes = argTypes;
 	this.returnType = returnType;
     }
 
     private static Signature buildBinary(type.Type t1, type.Type t2, type.Type rt){
-	ArrayList<Pair<type.Type,Boolean>> argTypes = new ArrayList<Pair<type.Type,Boolean>>();
-	argTypes.add(new Pair<type.Type,Boolean>(t1, false));
-	argTypes.add(new Pair<type.Type,Boolean>(t2, false));
+	List<Pair<Pair<String, Type>, Boolean>> argTypes = new ArrayList<Pair<Pair<String, Type>, Boolean>>();
+	Pair<String, Type> tempPair = new Pair<String, Type>(null, t1);
+	argTypes.add(new Pair<Pair<String, Type>, Boolean>(tempPair, false));
+	tempPair = new Pair<String, Type>(null, t2);
+	argTypes.add(new Pair<Pair<String, Type>, Boolean>(tempPair, false));
 	return new Signature(argTypes, rt);
     }
 
     private static Signature buildUnary(type.Type type, type.Type rt){
-	ArrayList<Pair<type.Type,Boolean>> argTypes = new ArrayList<Pair<type.Type,Boolean>>();
-	argTypes.add(new Pair<type.Type,Boolean>(type, false));
+	List<Pair<Pair<String, Type>, Boolean>> argTypes = new ArrayList<Pair<Pair<String, Type>, Boolean>>();
+	Pair<String, Type> tempPair = new Pair<String, Type>(null, type);
+	argTypes.add(new Pair<Pair<String, Type>, Boolean>(tempPair, false));
 	return new Signature(argTypes, rt);
     }
 
-    public static Signature buildFunction(ArrayList<Pair<type.Type,Boolean>> args, type.Type rt){
+    public static Signature buildFunction(List<Pair<Pair<String, Type>, Boolean>> args, type.Type rt){
 	    return new Signature(args, rt);
     }
 
