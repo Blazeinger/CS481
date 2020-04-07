@@ -1,0 +1,54 @@
+func is_letter(char c) -> bool
+{
+  var int A = int_of_char('A')
+  var int Z = int_of_char('Z')
+  var int a = int_of_char('a')
+  var int z = int_of_char('z')
+  var int i = int_of_char(c)
+  -> (A <= i <= Z) || (a <= i <= z)
+}
+
+func is_word(array<char> word) -> bool
+{
+  for(char c in word){
+    if (!is_letter(c)) {
+      -> F
+    }
+  }
+  -> T
+}
+
+func palindrome(array<char> word) -> bool
+{
+   var int counter = 0
+   var int size = length(word)
+   while (counter < size / 2){
+     if (word[counter] != word[size - 1 - counter]){
+       -> F
+     }
+   }
+   -> T
+}
+
+func print_result(array<char> word)
+{
+  print(array<char>, "The word ") 
+  print(array<char>, word)
+  print(array<char>, " is")
+  if (!palindrome(word)){
+    print(array<char>, " not")
+  }
+  print(array<char>, " a palindrome.")  
+}
+
+func main()
+{
+  var char null = char_of_int(0)
+  var array<char> hello =
+    { 'h', 'e', 'l', 'l', 'o', null }
+  var array<char> madam = "madam"
+  var array<char> elle = "elle"
+  print_result(hello)
+  print_result(madam)
+  print_result(elle)
+}

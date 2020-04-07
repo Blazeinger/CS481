@@ -1,0 +1,16 @@
+func gcd(int a, int b) -> int
+{
+  while(!(a==b)){
+    if (a < b){
+      b = b - a
+    } else {
+      a = a - b
+    }
+  }
+  -> a  
+}
+
+func main()
+{
+  print(int, gcd(21,15))
+}

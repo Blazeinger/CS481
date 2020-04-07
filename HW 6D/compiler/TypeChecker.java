@@ -8,13 +8,13 @@ import java.util.Stack;
 public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.Type>> {
 	private SymbolTable symbolTable;
 	private VisitedBlocks visitedBlocks;
-	private Stack<type.Type> visitedFunctions;
+	private Stack<Optional<type.Type>> visitedFunctions;
 
 	TypeChecker(SymbolTable symbolTable) {
 		super();
 		this.symbolTable = symbolTable;
 		this.visitedBlocks = new VisitedBlocks();
-		visitedFunctions = new Stack<type.Type>();
+		visitedFunctions = new Stack<Optional<type.Type>>();
 	}
 
 	private Boolean isAssignable(Expression exp) {
@@ -146,7 +146,7 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 			if(expType != type.Basic.BOOL){
 				errors.add(exp.pos + " cannot negate a non-bool type");
 			}
-			return null;
+			return Optional.of(expType);
 		}
 	}
 
@@ -381,8 +381,16 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 	public Optional<type.Type> visit(StmReturn stm){
 		// check type of exp is the same as the current func return type
 		Optional<type.Type> rtnOpt = stm.exp.accept(this);
-		if(rtnOpt.get() != visitedFunctions.peek()){
-			errors.add(stm.pos + " invalid return type for defined function");
+		if(visitedFunctions.peek().isPresent()){
+			if(rtnOpt != visitedFunctions.peek()){
+				errors.add(stm.pos + " invalid return type for defined function");
+			}
+		}
+		else{
+			if(rtnOpt.isPresent()){
+				errors.add(stm.pos + " function of no return type cannot"
+					+ " return type " + rtnOpt.get());
+			}
 		}
 		return rtnOpt;
 	}
@@ -450,7 +458,12 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 
 	public Optional<type.Type> visit(FunctionDefinition fun){
 		// push onto visited visitedFunctions
-		visitedFunctions.push(fun.returnType.get().type);
+		if(fun.returnType.isPresent()){
+			visitedFunctions.push(Optional.of(fun.returnType.get().type));
+		}
+		else{
+			visitedFunctions.push(Optional.empty());
+		}
 
 		// check inside block
 		fun.body.accept(this);

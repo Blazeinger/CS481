@@ -1,0 +1,58 @@
+# converts a character to an integer
+# the result is between 0 and 255
+func int_of_char(char c) -> int {
+  -> int_of_byte(byte_of_char(c))
+}
+
+# converts an integer to a character
+# the integer is considered modulo 256
+func char_of_int(int i) -> char {
+  -> char_of_byte(byte_of_int(i))
+}
+
+func in_interval(int value, int lower, int upper) -> bool
+{
+   -> (lower <= value) && (value <= upper)
+}
+
+func in_range(char character, char lower, char upper) -> bool
+{
+   -> in_interval(int_of_char(character),
+                  int_of_char(lower),
+                  int_of_char(upper))
+}
+
+# checks whether the character is an uppercase letter
+func is_upper(char c) -> bool {
+  -> in_range(c, 'A', 'Z')
+}
+
+# checks whether the character is a  lowercase letter
+func is_lower(char c) -> bool {
+  -> in_range(c, 'a', 'z')
+}
+
+# checks whether the character is a  lowercase letter
+func is_digit(char c) -> bool {
+  -> in_range(c, '0', '9')
+}
+
+# converts an uppercase letter to a lowercase letter
+# character is left unchanged if not an uppercase
+func to_lower(char c) -> char {
+  if (is_upper(c)) {
+    -> char_of_int(int_of_char(c) + 32)
+  } else {
+    -> c
+  }
+}
+
+# converts an lowercase letter to a uppercase letter
+# character is left unchanged if not a lowercase
+func to_upper(char c) -> char {
+  if (is_lower(c)) {
+    -> char_of_int(int_of_char(c) - 32)
+  } else {
+    -> c
+  }
+}
