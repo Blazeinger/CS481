@@ -1,0 +1,35 @@
+func main()
+{
+  # correct calls for print
+  var int x
+  if(3 < 4)
+  {
+    x = 5
+  }
+
+  var int y
+  if(3 < 4)
+  {
+    y = 5
+  }
+  else
+  {
+    y = 8
+  }
+
+  # incorrect calls for print due to not having a boolean value after if
+  if(3)
+  {
+    x = 5
+  }
+
+  var char characterOne = 'a'
+  if(characterOne)
+  {
+    x = 5
+  }
+  else
+  {
+    x = 8
+  }
+}
