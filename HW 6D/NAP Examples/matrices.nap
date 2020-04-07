@@ -1,0 +1,89 @@
+func abs(int x) -> int
+{
+  if (x < 0) {
+    x = -x
+  }
+  -> x
+}
+
+func create(int size) -> array<array<int>>
+{
+  size = abs(size)
+  var array<array<int>> matrix =
+    new(array<array<int>>, size)
+  var int counter = 0
+  while (counter < size){
+    matrix[counter] = new(array<int>, size)
+    counter++
+  }
+  -> matrix
+}
+
+func print_newline()
+{
+  print(char, '\n')
+}
+
+func print_matrix(array<array<int>> matrix)
+{
+  print(char, '[')
+  print_newline()
+  for(array<int> row in matrix){
+    print(array<char>, " [")
+    for(int cell in row){
+      print(int, cell)
+      print(char, ' ')
+    }
+    print(char, ']')
+    print_newline()
+  }
+  print(char, ']')
+  print_newline()
+}
+
+func diagonal(array<array<int>> m,
+	      int value)
+{
+  var int size = length(m)
+  var int row = 0
+  var int col = 0
+  while (row < size) {
+    while (col < size) {
+      if (row == col) {
+        m[row][col] = value
+      } else {
+	m[row][col] = 0
+      }
+    }
+  }
+}
+
+func add(array<array<int>> m1,
+	 array<array<int>> m2) -> array<array<int>>
+{
+  if (length(m1) == length(m2)){
+    var int size = length(m1)
+    var array<array<int>> m = create(size)
+    var int row = 0
+    var int col = 0
+    while (row < size) {
+      while (col < size) {
+	m[row][col] = m1[row][col] + m2[row][col]
+	col++
+      }
+      row++
+    }
+    -> m
+  } else {
+    -> create(0)
+  }
+}
+	 
+func main()
+{
+  var array<array<int>> m1 = create(10)
+  var array<array<int>> m2 = create(10)
+  diagonale(m1, 40)
+  diagonale(m2, 2)
+  print_array(add(m1, m2))
+}

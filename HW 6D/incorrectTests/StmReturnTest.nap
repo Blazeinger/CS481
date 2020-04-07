@@ -1,0 +1,37 @@
+# function that adds one to int
+# correct
+func addOne(int x) -> int
+{
+  -> (x + 1)
+}
+
+# function that adds one to int
+# incorrect int does not match bool return
+func addOneIncorrectOne(int x) -> int
+{
+  -> T
+}
+
+# function that adds one to int
+# incorrect bool does not match int return
+func addOneIncorrectTwo(int x) -> bool
+{
+  -> (x + 1)
+}
+
+
+
+func main()
+{
+  # initialization
+  var int integerOne = 5
+
+  # correct call
+  addOne(integerOne)
+
+  # incorrect call one
+  addOneIncorrectOne(integerOne)
+
+  # incorrect call two
+  addOneIncorrectTwo(integerOne)
+}
