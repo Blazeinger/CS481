@@ -1,0 +1,25 @@
+func main()
+{
+  # initialization
+  var int integerOne = 5
+  var bool booleanOne = T
+
+  # correct calls for print
+  print(int, integerOne)
+  print(bool, booleanOne)
+
+  # error argument types passed in don't match defined type
+  print(int, booleanOne)
+  print(bool, integerOne)
+
+  # initialization
+  var int i
+  var bool b
+
+  # correct calls for read
+  read(int, i)
+
+  # error argument types passed in don't match defined type
+  read(bool, i)
+  read(int, b)
+}

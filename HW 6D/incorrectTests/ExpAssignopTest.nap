@@ -1,0 +1,36 @@
+func main()
+{
+  # correct
+  var num = 1
+  num++
+  num--
+  ++num
+  --num
+
+  # error incrementing bool
+  var bool = T
+  bool++
+  bool--
+  ++bool
+  --bool
+
+  # error incrementing char
+  var char = T
+  char++
+  char--
+  ++char
+  --char
+
+  # error incrementing undefined
+  undefined++
+  undefined--
+  ++undefined
+  --undefined
+
+  # error incrementing array
+  var array<int> matrix = new(array<int>, 5)
+  matrix++
+  matrix--
+  ++matrix
+  --matrix
+}

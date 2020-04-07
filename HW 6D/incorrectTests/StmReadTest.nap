@@ -1,0 +1,17 @@
+func main()
+{
+  # initialization
+  var int i
+  var bool b
+
+  # correct calls for read
+  read(int, i)
+
+  # error argument types passed in don't match defined type
+  read(bool, i)
+  read(int, b)
+
+  # error unassignable argument
+  read(1, 22)
+  read(T, T)
+}
