@@ -1,0 +1,8 @@
+4. error when running matrices.nap: calling get on an optional without a value inside
+at compiler.TypeChecker.visit(TypeChecker.java:55)
+
+5. bug whe runnin palindrome.nap: "[line=8, column=6] left hand side of comparison only allows for types: int, not bool"
+
+6. error when running string_examples.nap: calling get on an optional without a value inside at compiler.TypeChecker.visit(TypeChecker.java:281)
+
+Note: some bugs and errors appear in other places. These are just the first instances when testing in order.

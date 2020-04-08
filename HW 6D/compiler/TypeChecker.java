@@ -21,10 +21,13 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 		Boolean isAssignable = false;
 
 		// chech if the expression is assignable and set to return true if it is
-		if(exp instanceof ExpVar ) {
+		if(exp instanceof ExpVar) {
 			if(symbolTable.varLookup(((ExpVar)exp).name, visitedBlocks).isPresent()){
 				isAssignable = true;
 			}
+		}
+		else if(exp instanceof ExpArrAccess){
+			isAssignable = true;
 		}
 
 		return isAssignable;
@@ -66,11 +69,11 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 			// arithmetic, needs type int (or float if implemented)
 			if(lftType != type.Basic.INT){
 				errors.add(exp.pos + " left hand side of arithmetic"
-					+ " expression must evaluate to a type int");
+					+ " expression must evaluate to a type int, not " + lftType);
 			}
 			if(rtType != type.Basic.INT){
 				errors.add(exp.pos + " right hand side of arithmetic"
-					+ " expression must evaluate to a type int");
+					+ " expression must evaluate to a type int, not " + rtType);
 			}
 			return Optional.of(type.Basic.INT);
 		}
@@ -82,11 +85,11 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 			// TODO: Are we able to compare characters?
 			if(lftType != type.Basic.INT){
 				errors.add(exp.pos + " left hand side of comparison only"
-					+ " allows for types: int");
+					+ " allows for types: int, not " +  lftType);
 			}
 			if(rtType != type.Basic.INT){
 				errors.add(exp.pos + " right hand side of comparison only"
-					+ " allows for types: int");
+					+ " allows for types: int, not " + rtType);
 			}
 			// TODO: add compare rhs with lhs if chars allowed
 
@@ -99,13 +102,13 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 				&& lftType != type.Basic.BOOL
 				&& lftType != type.Basic.CHAR){
 				errors.add(exp.pos + " left hand side of comparison only"
-					+ " allows for types: bool, int, char");
+					+ " allows for types: bool, int, char, not " + lftType);
 			}
 			if(lftType != type.Basic.INT
 				&& lftType != type.Basic.BOOL
 				&& lftType != type.Basic.CHAR){
 				errors.add(exp.pos + " right hand side of comparison only"
-					+ " allows for types: bool, int, char");
+					+ " allows for types: bool, int, char, not " + rtType);
 			}
 			// TODO: comparison of int with char
 			// compare rhs and lhs
@@ -117,11 +120,11 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 			// comparison (allowing for only bool types)
 			if(lftType != type.Basic.BOOL){
 				errors.add(exp.pos + " left hand side of logical Expression"
-				 	+ " only allows for types: bool");
+				 	+ " only allows for types: bool, not " + lftType);
 			}
 			if(rtType != type.Basic.BOOL){
 				errors.add(exp.pos + " right hand side of logical Expression"
-				 	+ " only allows for types: bool");
+				 	+ " only allows for types: bool, not " + rtType);
 			}
 			return Optional.of(type.Basic.BOOL);
 		}
@@ -187,62 +190,75 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 								+ " types");
 					}
 				}
+			}
+			else {
 				// number of args not the same
 				errors.add(exp.pos + " number of arguments in function call"
 					+ " does not match number of arguments in function"
 					+ " declaraction");
+				}
+
+			if(returnType != null){
 				return Optional.of(returnType);
-
 			}
-
-			// return the function's return type
-			return Optional.of(returnType);
+			else{
+				return Optional.empty();
+			}
 		}
 
 		return Optional.empty();
 	}
 
 	public Optional<type.Type> visit(ExpPredefinedCall exp){
-		// find argument types from symbol table
-		Optional<Signature> funcSigOpt
-						= symbolTable.funcLookup(exp.funcName.toString());
-		type.Type returnType = null;
-
-		if(funcSigOpt.isPresent()){
-			// pull signature out of Optional
-			Signature funcSig = funcSigOpt.get();
-
-			// find return type
-			Optional<type.Type> rtOpt = funcSig.returnType;
-			if(rtOpt.isPresent()){
-				returnType = rtOpt.get();
-			}
-
-			// check all argument types
-			// account for number of arguments and type of arguments
-			if(exp.arguments.size() == funcSig.argTypes.size()){
-				// check for same number of elements
-				for(int index = 0; index < exp.arguments.size(); index++){
-					// compare argument in exp to argument in signature
-					if(exp.arguments.get(index).accept(this).get()
-						!= funcSig.argTypes.get(index).getFst()){
-							errors.add(exp.pos + "mismatch of argument"
-								+ " types");
-					}
+		switch(exp.funcName){
+			case BYTE_OF_INT:
+				if(exp.arguments.size() != 1){
+					errors.add(exp.pos + "byte_of_int takes 1 argument");
 				}
-				// number of args not the same
-				errors.add(exp.pos + " number of arguments in function call"
-					+ " does not match number of arguments in function"
-					+ " declaraction");
-				return Optional.of(returnType);
+				else if(exp.arguments.get(0).accept(this).get() != type.Basic.INT){
+					errors.add(exp.pos + "byte_of_int must take a type of int");
+				}
+				return Optional.of(type.Basic.BYTE);
 
-			}
+			case INT_OF_BYTE:
+				if(exp.arguments.size() != 1){
+					errors.add(exp.pos + "int_of_byte takes 1 argument");
+				}
+				else if(exp.arguments.get(0).accept(this).get() != type.Basic.BYTE){
+					errors.add(exp.pos + "int_of_byte must take a type of byte");
+				}
+				return Optional.of(type.Basic.INT);
 
-			// return the function's return type
-			return Optional.of(returnType);
+			case CHAR_OF_BYTE:
+				if(exp.arguments.size() != 1){
+					errors.add(exp.pos + "char_of_byte takes 1 argument");
+				}
+				else if(exp.arguments.get(0).accept(this).get() != type.Basic.BYTE){
+					errors.add(exp.pos + "char_of_byte must take a type of byte");
+				}
+				return Optional.of(type.Basic.CHAR);
+
+			case BYTE_OF_CHAR:
+				if(exp.arguments.size() != 1){
+					errors.add(exp.pos + "byte_of_char takes 1 argument");
+				}
+				else if(exp.arguments.get(0).accept(this).get() != type.Basic.CHAR){
+					errors.add(exp.pos + "byte_of_char must take a type of char");
+				}
+				return Optional.of(type.Basic.BYTE);
+
+			case LENGTH:
+				if(exp.arguments.size() != 1){
+					errors.add(exp.pos + "length takes 1 argument");
+				}
+				else if(exp.arguments.get(0).accept(this).get() != type.Basic.CHAR){
+					errors.add(exp.pos + "length must take a type of array");
+				}
+				return Optional.of(type.Basic.INT);
+
+			default:
+				return Optional.empty();
 		}
-
-		return Optional.empty();
 	}
 
 	public Optional<type.Type> visit(ExpNew exp){
@@ -250,8 +266,8 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 		// as the type specified
 		type.Type expType = exp.exp.accept(this).get();
 
-		if(expType != exp.type.type){
-			errors.add(exp.pos + " mismatch of types in new statement");
+		if(expType != type.Basic.INT){
+			errors.add(exp.pos + " size expression must evaluate to an integer");
 		}
 
 		return Optional.of(expType);
@@ -337,7 +353,7 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 
 			// compare rhs type and lhs type
 			if(rhsType != lhsType){
-				errors.add(stm.pos + "cannot assign type " + rhsType + " to"
+				errors.add(stm.pos + " cannot assign type " + rhsType + " to"
 					+ " type " + lhsType);
 			}
 		}
@@ -367,13 +383,16 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 
 	public Optional<type.Type> visit(StmPrint stm){
 		// check exp is assignable and matches type with the type
-		if(stm.exp.accept(this).get() == stm.type.type){
-			if(!isAssignable(stm.exp)){
-				errors.add(stm.pos + "given expression is not assignable");
-			}
+		if(stm.exp.accept(this).get() instanceof type.Array
+			&& ((type.Array)stm.exp.accept(this).get()).type == type.Basic.CHAR
+			&& stm.type.type instanceof type.Array
+			&& ((type.Array)stm.type.type).type == type.Basic.CHAR){
+
 		}
-		else{
-			errors.add(stm.pos + " mismatched expression type and print type");
+		else if(stm.exp.accept(this).get() != stm.type.type){
+			errors.add(stm.pos + " mismatched expression type: "
+				+ stm.exp.accept(this).get() + " and print type: "
+				+ stm.type.type);
 		}
 		return null;
 	}
@@ -381,9 +400,16 @@ public class TypeChecker extends ErrorList implements ast.Visitor<Optional<type.
 	public Optional<type.Type> visit(StmReturn stm){
 		// check type of exp is the same as the current func return type
 		Optional<type.Type> rtnOpt = stm.exp.accept(this);
+		type.Type rtnType = null;
+		if(rtnOpt.isPresent()){
+			rtnType = rtnOpt.get();
+		}
 		if(visitedFunctions.peek().isPresent()){
-			if(rtnOpt != visitedFunctions.peek()){
-				errors.add(stm.pos + " invalid return type for defined function");
+			// TODO: if types are arrays, must recursively compare inner types
+			if(rtnType != visitedFunctions.peek().get()){
+				errors.add(stm.pos + " invalid return type for defined function."
+					+ " function return type: " + visitedFunctions.peek().get()
+					+ " and trying to return: " + rtnType);
 			}
 		}
 		else{
