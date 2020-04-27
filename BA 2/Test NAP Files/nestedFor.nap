@@ -1,0 +1,10 @@
+func printAll(array<array<int>> matrix)
+{
+  for(array<int> line in matrix){
+    for(int value in line){
+      print(int, value)
+      print(char, ' ')
+    }
+    print(char, '\n')
+  }
+}

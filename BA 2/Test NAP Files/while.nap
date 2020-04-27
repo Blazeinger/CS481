@@ -1,0 +1,20 @@
+func sum(array<int> table) -> int
+{
+  var int sum = 0
+  var int counter = 0
+  while(counter < length(table)){
+    var int value = table[counter]
+    sum += value
+    counter += 1
+  }
+  -> sum
+}
+func printAll(array<array<char>> text)
+{
+  var int counter = 0
+  while(counter < length(text)){
+    var array<char> line = text[counter]
+    print(array<char>, line)
+    counter += 1
+  }
+}

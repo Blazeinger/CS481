@@ -1,0 +1,14 @@
+func sum(array<int> table) -> int
+{
+  var int sum = 0
+  for(int value in table){
+    sum += value
+  }  
+  -> sum
+}
+func printAll(array<array<char>> text)
+{
+  for(array<char> line in text){
+    print(array<char>, line)
+  }
+}
