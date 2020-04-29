@@ -10,7 +10,7 @@ parameters: (parameter (COMMA parameter)*)? ;
 
 block: LBLOCK statement* RBLOCK;
 
-type: INT                      #TInt  
+type: INT                      #TInt
     | BOOL                     #TBool
     | CHAR                     #TChar
     | FLOAT                    #TFloat
@@ -25,7 +25,7 @@ statement: declaration        #SDecl
 declaration: VAR type Identifier (ASSIGN expr)? ;
 
 instruction:
-      expr op=(ASSIGN|AEQ|MEQ|SEQ|DEQ) expr        #IAssign
+      expr op=(ASSIGN|AEQ|MEQ|SEQ|DEQ) expr       #IAssign
     | FOR LPAR type Identifier IN expr RPAR block #IFor
     | WHILE LPAR expr RPAR block                  #IWhile
     | DO block WHILE LPAR expr RPAR               #IDoWhile
@@ -36,7 +36,7 @@ instruction:
     | expr                                        #IExpr
     ;
 
-expr: 
+expr:
       expr op=(MUL|DIV|MOD) expr                  #EMuls
     | expr op=(ADD|SUB) expr                      #EAdds
     | SUB expr                                    #EOpp
@@ -46,8 +46,8 @@ expr:
     | NOT expr                                    #ENot
     | expr AssignOp                               #EPostfix
     | AssignOp expr                               #EPrefix
-    | Identifier LPAR expressions RPAR            #ECall    
-    | Identifier                                  #EIdentifier        
+    | Identifier LPAR expressions RPAR            #ECall
+    | Identifier                                  #EIdentifier
     | Int                                         #EInt
     | Bool                                        #EBool
     | Char                                        #EChar
@@ -55,7 +55,7 @@ expr:
     | NEW LPAR type COMMA expr RPAR               #ENew
     | expr LBRACKET expr RBRACKET                 #EArrayAccess
     | LBLOCK expressions RBLOCK                   #EArrayEnumeration
-    | LPAR expr RPAR                              #EPar    
+    | LPAR expr RPAR                              #EPar
     ;
 
 expressions: (expr (COMMA expr)*)? ;
@@ -67,13 +67,13 @@ Int: PInt | (SUB)PInt;
 PInt: [0-9]+;
 
 //ToDo: remove \ from the range
-Char: QUOTE([\u0020-\u0026\u0028-\u007E]|Escape)QUOTE; 
+Char: QUOTE([\u0020-\u0026\u0028-\u007E]|Escape)QUOTE;
 
 //ToDo: remove \ from the range
 String: SQUOTE([ !\u0023-\u007E]|Escape)*SQUOTE;
-        
+
 Escape: BACKSLASH('n'|'t'|QUOTE|SQUOTE|BACKSLASH|'0');
-        
+
 AssignOp: INCR | DECR;
 
 // =====================
@@ -96,7 +96,7 @@ IN: 'in';
 AEQ: '+=';
 SEQ: '-=';
 MEQ: '*=';
-DEQ: '/=';          
+DEQ: '/=';
 QUOTE: '\'';
 SQUOTE: '"';
 BACKSLASH: '\\';

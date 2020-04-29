@@ -1,7 +1,7 @@
 func main()
 {
   # initialization
-  var array<int> arr = new(<array<int>, size)
+  var array<int> arr = new(array<int>, 3)
 
   # correct
   arr = {1, 2, 3}

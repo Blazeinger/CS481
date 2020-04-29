@@ -1,0 +1,13 @@
+func main()
+{
+  # initialization
+  var array<int> arr = new(<array<int>, size)
+
+  # correct
+  arr = {1, 2, 3}
+
+  # incorrect calls due to type not matching the array type
+  arr = {1, T, 3}
+  arr = {'c', 'b', 'c'}
+  arr = {1, 2, 'h'}
+}
