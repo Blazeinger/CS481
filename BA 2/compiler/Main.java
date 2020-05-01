@@ -77,7 +77,8 @@ public class Main {
         SymbolTable symbolTable = buildSymbolTable(program);
         typeCheck(program, symbolTable);
         // program = ExpAssignopElimination.transform(program);
-        program = AssignSimplifier.transform(program);
+        // program = AssignSimplifier.transform(program);
+	   program = ForElimination.transform(program);
         print(program);
     }
 }
