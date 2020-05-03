@@ -23,15 +23,38 @@ public class Expression implements ir.expr.Visitor<List<String>> {
 
     @Override
     public List<String> visit(ReadReg exp) {
-	// TODO: to complete
         List<String> asmCode = new LinkedList<>();
+
+        Integer offset = regAddress.get( exp.getRegister());
+        asmCode.add("lw $t0, "+offset+"($fp)");
+        asmCode.addAll( Asm.push("t0") );
+
         return asmCode;
     }
 
     @Override
     public List<String> visit(ReadMem exp) {
-	// TODO: to complete
         List<String> asmCode = new LinkedList<>();
+
+        // address of array
+        Integer offset = regAddress.get( exp.getRegister());
+        asmCode.add("lw $t0, "+offset+"($fp)");
+
+        // NAP offset for array
+        exp.getOffset().accept(this);
+        Asm.pop("$t1");
+
+        // compute MIPS offset
+        Integer size = Asm.sizeOf(exp.getType());
+        asmCode.add("mult $t1, "+ size );
+        asmCode.add("mflo $t1");
+        asmCode.add("addi $t1, $t1, 4");
+        asmCode.add("add $t1, $t1, $t0");
+
+        // load from mem and push onto stack
+        asmCode.add( Asm.load(size)+" $t0, $t1");
+        Asm.push("$t0");
+
         return asmCode;
     }
 

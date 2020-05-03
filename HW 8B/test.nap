@@ -1,0 +1,3 @@
+func main(){
+    print(array<char>, "Hello World!\n")
+}

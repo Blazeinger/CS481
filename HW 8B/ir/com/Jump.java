@@ -1,6 +1,5 @@
 package ir.com;
 
-import ir.expr.Expression;
 
 public class Jump extends Command
 {

@@ -53,7 +53,12 @@ public class Program {
 
     static private void mipsTextGeneration(AsmWriter output, Label mainLabel) {
         List<String> asmCode = new LinkedList<>();
-	// TODO: to complete
+
+        asmCode.add(Asm.directive("text"));
+        asmCode.add(Asm.label("main"));
+        asmCode.add( Asm.command("jal "+mainLabel) );
+        asmCode.addAll( Asm.exit() );
+        
         output.writeAllLines(asmCode);
     }
 

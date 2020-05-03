@@ -53,8 +53,15 @@ public class Command implements Visitor<List<String>> {
 
     @Override
     public List<String> visit(CJump com) {
-	// TODO: To Complete
-	List<String> asmCode = new LinkedList<>();
+    List<String> asmCode = new LinkedList<>();
+    
+        List<String> value = com.getCondition().accept(exprVisitor);
+
+        asmCode.addAll( value );
+        asmCode.addAll(Asm.pop("$t0"));
+        asmCode.add(Asm.command("beq $t0, $ZERO, "+com.getFalseLabel()));
+        asmCode.add(Asm.command("j "+com.getTrueLabel()));
+
         return asmCode;
     }
 
@@ -78,8 +85,12 @@ public class Command implements Visitor<List<String>> {
 
     @Override
     public List<String> visit(ProcCall com) {
-	// TODO: To Complete
-	List<String> asmCode = new LinkedList<>();
+        List<String> asmCode = new LinkedList<>();
+
+        asmCode.addAll( passArguments( com.getArguments() ) );
+        // params in %a0-a3, more than 4 params not supported
+        asmCode.add("jal "+com.getFrame().getEntryPoint());
+
         return asmCode;	
     }
 
