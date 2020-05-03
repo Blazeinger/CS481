@@ -1,0 +1,6 @@
+func main ()
+{
+  var int x
+  read(int, x)
+  print(int, x)
+}

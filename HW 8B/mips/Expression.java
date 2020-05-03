@@ -26,8 +26,8 @@ public class Expression implements ir.expr.Visitor<List<String>> {
         List<String> asmCode = new LinkedList<>();
 
         Integer offset = regAddress.get( exp.getRegister());
-        asmCode.add("lw $t0, "+offset+"($fp)");
-        asmCode.addAll( Asm.push("t0") );
+        asmCode.add("\tlw $t0, "+offset+"($fp)");
+        asmCode.addAll( Asm.push("$t0") );
 
         return asmCode;
     }
@@ -38,7 +38,7 @@ public class Expression implements ir.expr.Visitor<List<String>> {
 
         // address of array
         Integer offset = regAddress.get( exp.getRegister());
-        asmCode.add("lw $t0, "+offset+"($fp)");
+        asmCode.add("\tlw $t0, "+offset+"($fp)");
 
         // NAP offset for array
         exp.getOffset().accept(this);
@@ -46,13 +46,12 @@ public class Expression implements ir.expr.Visitor<List<String>> {
 
         // compute MIPS offset
         Integer size = Asm.sizeOf(exp.getType());
-        asmCode.add("mult $t1, "+ size );
-        asmCode.add("mflo $t1");
+        asmCode.add("mul $t1, $t1, " + size );
         asmCode.add("addi $t1, $t1, 4");
         asmCode.add("add $t1, $t1, $t0");
 
         // load from mem and push onto stack
-        asmCode.add( Asm.load(size)+" $t0, $t1");
+        asmCode.add( Asm.command(Asm.load(size) + " $t0, ($t1)"));
         Asm.push("$t0");
 
         return asmCode;
@@ -73,7 +72,7 @@ public class Expression implements ir.expr.Visitor<List<String>> {
         asmCode.addAll(Asm.push("$t0"));
         return asmCode;
     }
-    
+
     public List<String> memoryRW(RegisterOffset irObject, int size){
         Register arrayRegister = irObject.getRegister();
         int registerOffset = regAddress.get(arrayRegister);

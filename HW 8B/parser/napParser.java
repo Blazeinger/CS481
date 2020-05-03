@@ -1,4 +1,4 @@
-// Generated from nap.g4 by ANTLR 4.8
+// Generated from nap.g4 by ANTLR 4.7.1
 package parser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class napParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -29,39 +29,29 @@ public class napParser extends Parser {
 		RULE_program = 0, RULE_function_definition = 1, RULE_parameter = 2, RULE_parameters = 3, 
 		RULE_block = 4, RULE_type = 5, RULE_statement = 6, RULE_declaration = 7, 
 		RULE_instruction = 8, RULE_expr = 9, RULE_expressions = 10;
-	private static String[] makeRuleNames() {
-		return new String[] {
-			"program", "function_definition", "parameter", "parameters", "block", 
-			"type", "statement", "declaration", "instruction", "expr", "expressions"
-		};
-	}
-	public static final String[] ruleNames = makeRuleNames();
+	public static final String[] ruleNames = {
+		"program", "function_definition", "parameter", "parameters", "block", 
+		"type", "statement", "declaration", "instruction", "expr", "expressions"
+	};
 
-	private static String[] makeLiteralNames() {
-		return new String[] {
-			null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'", 
-			"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", 
-			"'*='", "'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", 
-			"'--'", "'+'", "'&&'", "'||'", "'*'", "'-'", "'/'", "'mod'", "'=='", 
-			"'!='", "'<'", "'>'", "'<='", "'>='", "'='", "'!'", "'array'", "'bool'", 
-			"'byte'", "'int'", "'float'", "'char'", "'func'", "'('", "')'", "','", 
-			"'ref'", "'var'", "'read'", "'print'", "'new'"
-		};
-	}
-	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-	private static String[] makeSymbolicNames() {
-		return new String[] {
-			null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", 
-			"WS", "TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", 
-			"AEQ", "SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", 
-			"RBLOCK", "LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", 
-			"MUL", "SUB", "DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", 
-			"NOT", "ARRAY", "BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", 
-			"RPAR", "COMMA", "REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", 
-			"Comments"
-		};
-	}
-	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+	private static final String[] _LITERAL_NAMES = {
+		null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'", 
+		"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", "'*='", 
+		"'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", "'--'", 
+		"'+'", "'&&'", "'||'", "'*'", "'-'", "'/'", "'mod'", "'=='", "'!='", "'<'", 
+		"'>'", "'<='", "'>='", "'='", "'!'", "'array'", "'bool'", "'byte'", "'int'", 
+		"'float'", "'char'", "'func'", "'('", "')'", "','", "'ref'", "'var'", 
+		"'read'", "'print'", "'new'"
+	};
+	private static final String[] _SYMBOLIC_NAMES = {
+		null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS", 
+		"TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ", 
+		"SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK", 
+		"LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "MUL", "SUB", 
+		"DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", "NOT", "ARRAY", 
+		"BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA", 
+		"REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", "Comments"
+	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -111,7 +101,6 @@ public class napParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
-
 	public static class ProgramContext extends ParserRuleContext {
 		public TerminalNode EOF() { return getToken(napParser.EOF, 0); }
 		public List<Function_definitionContext> function_definition() {

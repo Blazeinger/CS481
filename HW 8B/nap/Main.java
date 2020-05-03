@@ -168,7 +168,7 @@ public class Main {
                     perform.setEliminatingAssignop();
                     break;
                 case "-i":
-		    perform.setInterpreting();
+		    		perform.setInterpreting();
                     break;
                 case "-sa":
                     perform.setSimplifyingAssignment();

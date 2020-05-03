@@ -54,12 +54,12 @@ public class Command implements Visitor<List<String>> {
     @Override
     public List<String> visit(CJump com) {
     List<String> asmCode = new LinkedList<>();
-    
+
         List<String> value = com.getCondition().accept(exprVisitor);
 
         asmCode.addAll( value );
         asmCode.addAll(Asm.pop("$t0"));
-        asmCode.add(Asm.command("beq $t0, $ZERO, "+com.getFalseLabel()));
+        asmCode.add(Asm.command("beq $t0, $zero, "+com.getFalseLabel()));
         asmCode.add(Asm.command("j "+com.getTrueLabel()));
 
         return asmCode;
@@ -89,9 +89,11 @@ public class Command implements Visitor<List<String>> {
 
         asmCode.addAll( passArguments( com.getArguments() ) );
         // params in %a0-a3, more than 4 params not supported
-        asmCode.add("jal "+com.getFrame().getEntryPoint());
+	   // TODO: possably save return address before jal and restore after?
+	   // 		if so, how?
+        asmCode.add("\tjal "+com.getFrame().getEntryPoint());
 
-        return asmCode;	
+        return asmCode;
     }
 
     @Override

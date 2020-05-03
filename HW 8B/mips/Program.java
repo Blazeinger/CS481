@@ -24,11 +24,11 @@ public class Program {
 	new ErrorReporter<>("MIPS Code Generation");
 
     public static class AsmWriter extends PrintWriter{
-        
+
         AsmWriter(Path path) throws FileNotFoundException {
             super(new OutputStreamWriter(new FileOutputStream(path.toFile())));
         }
-        
+
         void transferFrom(BufferedReader in) {
             try {
                 while (in.ready())
@@ -37,7 +37,7 @@ public class Program {
                 errorReporter.report(Status.IO_ERROR, "Transferring resources");
             }
         }
-     
+
         void writeAllLines(List<String> lines){
             for (String line : lines)
                 println(line);
@@ -54,11 +54,12 @@ public class Program {
     static private void mipsTextGeneration(AsmWriter output, Label mainLabel) {
         List<String> asmCode = new LinkedList<>();
 
+	   asmCode.add(Asm.directive("data"));
         asmCode.add(Asm.directive("text"));
         asmCode.add(Asm.label("main"));
         asmCode.add( Asm.command("jal "+mainLabel) );
         asmCode.addAll( Asm.exit() );
-        
+
         output.writeAllLines(asmCode);
     }
 

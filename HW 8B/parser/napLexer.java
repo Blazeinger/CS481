@@ -1,4 +1,4 @@
-// Generated from nap.g4 by ANTLR 4.8
+// Generated from nap.g4 by ANTLR 4.7.1
 package parser;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class napLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -33,44 +33,34 @@ public class napLexer extends Lexer {
 		"DEFAULT_MODE"
 	};
 
-	private static String[] makeRuleNames() {
-		return new String[] {
-			"Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS", 
-			"TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ", 
-			"SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK", 
-			"LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "MUL", "SUB", 
-			"DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", "NOT", "ARRAY", 
-			"BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA", 
-			"REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", "Comments"
-		};
-	}
-	public static final String[] ruleNames = makeRuleNames();
+	public static final String[] ruleNames = {
+		"Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS", "TRUE", 
+		"FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ", "SEQ", 
+		"MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK", "LBRACKET", 
+		"RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "MUL", "SUB", "DIV", "MOD", 
+		"EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", "NOT", "ARRAY", "BOOL", 
+		"BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA", "REF", 
+		"VAR", "INPUT", "PRINT", "NEW", "Identifier", "Comments"
+	};
 
-	private static String[] makeLiteralNames() {
-		return new String[] {
-			null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'", 
-			"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", 
-			"'*='", "'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", 
-			"'--'", "'+'", "'&&'", "'||'", "'*'", "'-'", "'/'", "'mod'", "'=='", 
-			"'!='", "'<'", "'>'", "'<='", "'>='", "'='", "'!'", "'array'", "'bool'", 
-			"'byte'", "'int'", "'float'", "'char'", "'func'", "'('", "')'", "','", 
-			"'ref'", "'var'", "'read'", "'print'", "'new'"
-		};
-	}
-	private static final String[] _LITERAL_NAMES = makeLiteralNames();
-	private static String[] makeSymbolicNames() {
-		return new String[] {
-			null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", 
-			"WS", "TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", 
-			"AEQ", "SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", 
-			"RBLOCK", "LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", 
-			"MUL", "SUB", "DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", 
-			"NOT", "ARRAY", "BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", 
-			"RPAR", "COMMA", "REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", 
-			"Comments"
-		};
-	}
-	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
+	private static final String[] _LITERAL_NAMES = {
+		null, null, null, null, null, null, null, null, null, "'T'", "'F'", "'for'", 
+		"'while'", "'do'", "'if'", "'else'", "'->'", "'in'", "'+='", "'-='", "'*='", 
+		"'/='", "'''", "'\"'", "'\\'", "'{'", "'}'", "'['", "']'", "'++'", "'--'", 
+		"'+'", "'&&'", "'||'", "'*'", "'-'", "'/'", "'mod'", "'=='", "'!='", "'<'", 
+		"'>'", "'<='", "'>='", "'='", "'!'", "'array'", "'bool'", "'byte'", "'int'", 
+		"'float'", "'char'", "'func'", "'('", "')'", "','", "'ref'", "'var'", 
+		"'read'", "'print'", "'new'"
+	};
+	private static final String[] _SYMBOLIC_NAMES = {
+		null, "Bool", "Int", "PInt", "Char", "String", "Escape", "AssignOp", "WS", 
+		"TRUE", "FALSE", "FOR", "WHILE", "DO", "IF", "ELSE", "ARROW", "IN", "AEQ", 
+		"SEQ", "MEQ", "DEQ", "QUOTE", "SQUOTE", "BACKSLASH", "LBLOCK", "RBLOCK", 
+		"LBRACKET", "RBRACKET", "INCR", "DECR", "ADD", "AND", "OR", "MUL", "SUB", 
+		"DIV", "MOD", "EQ", "NEQ", "LT", "GT", "LE", "GE", "ASSIGN", "NOT", "ARRAY", 
+		"BOOL", "BYTE", "INT", "FLOAT", "CHAR", "FUNC", "LPAR", "RPAR", "COMMA", 
+		"REF", "VAR", "INPUT", "PRINT", "NEW", "Identifier", "Comments"
+	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
