@@ -1,0 +1,17 @@
+Usage: java nap.Main [options] NAP_Source_File.nap argument1 ... argumentN
+
+The options are:
+
+-h      print this message
+-p      only parse the source file
+-b      parse and build the abstract syntax tree
+-pp     parse, build the AST, print the NAP program on standard output
+-s      parse, build the AST, build the symbol table
+-t      same as -s plus type check the program
+-tr     same as -s and translate to intermediate representation
+-ef     same as -b and eliminate for loops by program transformation
+-ea     same as -b and eliminate ++ and -- by program transformation
+-sa     same as -b and eliminate assignment operations (+=, -=, *=, /=)
+-i      same as -t and execute the program
+-c      same as -tr and additional compiles to MIPS/SPIM in a file NAP_Source_File.asm
+-v      verbose

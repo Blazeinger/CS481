@@ -1,0 +1,10 @@
+mips/resources/print_int.asm
+mips/resources/print_char.asm
+mips/resources/print_bool.asm
+mips/resources/print_string.asm
+mips/resources/length.asm
+mips/resources/new.asm
+mips/resources/read_char.asm
+mips/resources/read_int.asm
+mips/resources/read_bool.asm
+mips/resources/read_string.asm
