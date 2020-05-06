@@ -1,0 +1,7 @@
+# A Small NAP Program
+func main(){
+  var int x = 41
+  x = x + 1
+  print(int, x)
+  print(char, '\n')
+}
