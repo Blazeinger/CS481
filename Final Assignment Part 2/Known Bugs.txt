@@ -1,0 +1,16 @@
+While running the interpreter:
+
+1. ==============================================================================
+
+There appears to be a runtime problem with the assignment operator += and ++. On testing tests/primes.nap, the error is thrown: Runtime error: Unsupported feature assignment with operator [line=6, column=4].
+The same error is thrown when an increment is used.
+
+When running primes_fixed, the program falls into an infinite loop.
+
+2. ==============================================================================
+
+When running tests/string_examples.nap, interpreter gives error for incorrect return type for main, but return type is correct.
+
+3. ==============================================================================
+
+Since there is no way to return values from interpreter.Interpreter.run, how are you supposed to get a value returned from the program and report it in nap.Main?

@@ -163,11 +163,15 @@ public class Interpreter {
 
         @Override
         public Value visit(ExpUnop exp) {
-	    // TODO: To Complete
-	    errorReporter.report(Status.UNSUPPORTED,
-				 "not implemented yet", exp.pos);
-            return null;
-        }
+	    	Value expVal = exp.exp.accept(this);
+
+	    	switch (exp.op) {
+		    	case SUB:
+				return arithmeticOp(exp.pos, new ValueInt(0), OpBinary.SUB, expVal);
+			default:
+				return new ValueBool(!((ValueBool)expVal).value);
+	    	}
+        	}
 
         @Override
         public Value visit(ExpAssignop exp) {
@@ -268,18 +272,31 @@ public class Interpreter {
 
         @Override
         public Value visit(ExpArrEnum array) {
-	    // TODO: To Complete
-	    errorReporter.report(Status.UNSUPPORTED,
-				 "not implemented yet", array.pos);
-            return null;
+	    // evaluate the list of expressions to obtain values
+	    // then build a value array
+	    List<Value> values = new ArrayList<Value>();
+	    for (Expression exp : array.exps) {
+		    values.add(exp.accept(this));
+	    }
+	    return new ValueArray(values);
         }
 
         @Override
         public Value visit(StmIf stm) {
-	    // TODO: To Complete
-	    errorReporter.report(Status.UNSUPPORTED,
-				 "not implemented yet", stm.pos);
-            return null;
+	   		Value conditionVal = stm.condition.accept(this);
+			assert conditionVal instanceof ValueBool :
+				"Internal Error: if statement conditional is not of type bool";
+			if (((ValueBool)conditionVal).value) {
+				return stm.then_branch.accept(this);
+			}
+			else {
+				if (stm.else_branch.isPresent()) {
+					return stm.else_branch.get().accept(this);
+				}
+				else {
+					return Value.NONE;
+				}
+			}
         }
 
         @Override
@@ -334,7 +351,12 @@ public class Interpreter {
                     expression = new ExpPredefinedCall(stm.pos, OpPredefined.BYTE_OF_INT,
                             MakeList.one(new ExpInt(stm.pos, Integer.parseInt(line))));
                 if (stm.type.type == Basic.BOOL)
-                    expression = new ExpBool(stm.pos, Boolean.parseBoolean(line));
+                    if (line.equals("T")) {
+					expression = new ExpBool(stm.pos, true);
+				}
+				else {
+					expression = new ExpBool(stm.pos, false);
+				}
                 if (stm.type.type.equals(type.Array.stringType))
                     expression = new ExpString(stm.pos, line);
             } catch (NumberFormatException e) {
@@ -370,7 +392,8 @@ public class Interpreter {
                     if (value != Value.NONE) return value;
                     condition = stm.condition.accept(this);
                     assert condition instanceof ValueBool : "Internal Error: condition: " + stm.pos;
-                } while (((ValueBool) condition).value);
+                }
+			 while (((ValueBool) condition).value);
             else {
                 condition = stm.condition.accept(this);
                 assert condition instanceof ValueBool : "Internal Error: condition: " + stm.pos;
@@ -385,10 +408,14 @@ public class Interpreter {
 
         @Override
         public Value visit(StmFor stm) {
-	    // TODO: To Complete
-            errorReporter.report(Status.UNSUPPORTED,
-				 "not implemented yet", stm.pos);
-            return Value.NONE;
+		   Value collectionVal = stm.collection.accept(this);
+		   assert collectionVal instanceof ValueArray :
+		   		"Internal Error: collection is not iterable";
+		   for (Value val : ((ValueArray)collectionVal).getValues()) {
+			   stm.body.accept(this);
+		   }
+
+		   return Value.NONE;
         }
 
         @Override
